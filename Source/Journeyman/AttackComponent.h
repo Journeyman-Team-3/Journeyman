@@ -3,16 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttackSwingCapsule.h"
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
 UENUM(BlueprintType)
 enum class EAttackType : uint8 {
-	AE_Swing       
-	UMETA(DisplayName = "Swing Attack"),
-
-	AE_Range       
-	UMETA(DisplayName = "Range Attack")
+	Swing,
+	Range
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -29,12 +27,14 @@ private:
 	bool bIsSwinging;
 
 	UPROPERTY(EditAnywhere)
-	float RotationSpeed = 10.f;
+	float RotationSpeed = 360.f;
 
 	float CurrentRotation = 0.f;
 	float MaxRotation = 180.f;
 
 	AActor* OwningActor;
+
+	AAttackSwingCapsule* SwingCollision;
 
 protected:
 	
@@ -44,10 +44,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable)
 	void Attack(EAttackType AttackType);
 
 private:
 	void SwingAttack();
+
 
 protected:
 	// Called when the game starts

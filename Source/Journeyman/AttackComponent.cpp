@@ -5,6 +5,9 @@
 #include "Components/StaticMeshComponent.h"
 #include <Components/CapsuleComponent.h>
 
+#include "AttackSwingCapsule.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values for this component's properties
 UAttackComponent::UAttackComponent()
 {
@@ -32,16 +35,38 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	
+	if (bIsSwinging)
+	{
+		if (CurrentRotation < 180.f)
+		{
+			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * RotationSpeed);
+			
+			SwingCollision->SetActorRotation(FRotator(
+				SwingCollision->GetActorRotation().Pitch,
+				NewYaw,
+				SwingCollision->GetActorRotation().Roll));
+
+			CurrentRotation = NewYaw;
+		}
+		else
+		{
+			AActor* ComponentToDelete = UGameplayStatics::GetActorOfClass(GetWorld(), AAttackSwingCapsule::StaticClass());
+
+			ComponentToDelete->Destroy();
+
+			CurrentRotation = 0.f;
+		} 
+	}
 }
 
 void UAttackComponent::Attack(EAttackType AttackType) 
 {
 	switch (AttackType)
 	{
-	case EAttackType::AE_Swing:
+	case EAttackType::Swing:
+		SwingAttack();
 		break;
-	case EAttackType::AE_Range:
+	case EAttackType::Range:
 		break;
 	default:
 		break;
@@ -55,8 +80,18 @@ void UAttackComponent::SwingAttack()
 	{
 		return;
 	}
+	
+	// Add SwingCollision to the centre point on the owner
+	// TODO: Spawn Actor
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const FVector SpawnLocation = FVector(0.f, 0.f, 0.f);
+	const FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
+	SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(AAttackSwingCapsule::StaticClass(), &SpawnLocation, &SpawnRotation, SpawnInfo));
+	SwingCollision->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 
-	// Add CentrePoint To Owner
-	UActorComponent* CentrePoint = OwningActor->AddComponentByClass(UCapsuleComponent, false);
+	SwingCollision->Tags.AddUnique("AttackSystemTemp");
+
+	bIsSwinging = true;
 }
 
