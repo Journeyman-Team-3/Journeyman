@@ -81,32 +81,18 @@ void UAttackComponent::SwingAttack()
 	
 	// Add SwingCollision to the centre point on the owner
 	// TODO: Spawn Actor
-	try
-	{
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		const FVector SpawnLocation = OwningActor->GetActorLocation();
-		const FRotator SpawnRotation = OwningActor->GetActorRotation();
-		SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(SwingCollisionClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
-		// SwingCollision->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-	}
-	catch (...)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault JP02: And Error Occured With AttackComponent"));
-	}
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const FVector SpawnLocation = OwningActor->GetActorLocation();
+	const FRotator SpawnRotation = OwningActor->GetActorRotation();
+	SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(SwingCollisionClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
 
-	try
-	{
-		SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
-		SwingCollision->CurrentRotation = SwingCollision->StartRotation;
-		SwingCollision->MaxRotation = SwingCollision->CurrentRotation + 180.f;
-	}
-	catch (...)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault JP01: And Error Occured With AttackComponent"));
-	}
+	SwingCollision->AttachToActor(OwningActor, FAttachmentTransformRules::KeepWorldTransform);
+
+	SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
+	SwingCollision->CurrentRotation = SwingCollision->StartRotation;
+	SwingCollision->MaxRotation = SwingCollision->CurrentRotation + 180.f;
 	
-
 	// SwingCollision->Tags.AddUnique("AttackSystemTemp");
 
 	bIsSwinging = true;

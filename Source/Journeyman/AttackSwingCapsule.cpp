@@ -53,9 +53,3 @@ void AAttackSwingCapsule::OnOverlapBeginSwing(UPrimitiveComponent* OverlappedCom
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped Actor"));
 }
 
-void AAttackSwingCapsule::OnHitSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Actor"));
-}
-
