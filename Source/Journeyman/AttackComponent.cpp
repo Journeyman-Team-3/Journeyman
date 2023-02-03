@@ -14,8 +14,6 @@ UAttackComponent::UAttackComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	
 }
 
 
@@ -37,16 +35,16 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (bIsSwinging)
 	{
-		if (CurrentRotation < 180.f)
+		if (SwingCollision->CurrentRotation != SwingCollision->MaxRotation)
 		{
-			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * RotationSpeed);
+			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * SwingCollision->RotationSpeed);
 			
 			SwingCollision->SetActorRotation(FRotator(
 				SwingCollision->GetActorRotation().Pitch,
 				NewYaw,
 				SwingCollision->GetActorRotation().Roll));
 
-			CurrentRotation = NewYaw;
+			SwingCollision->CurrentRotation = NewYaw;
 		}
 		else
 		{
@@ -54,7 +52,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 			ComponentToDelete->Destroy();
 
-			CurrentRotation = 0.f;
+			SwingCollision->CurrentRotation = 0.f;
 		} 
 	}
 }
@@ -83,14 +81,33 @@ void UAttackComponent::SwingAttack()
 	
 	// Add SwingCollision to the centre point on the owner
 	// TODO: Spawn Actor
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	const FVector SpawnLocation = FVector(0.f, 0.f, 0.f);
-	const FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
-	SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(AAttackSwingCapsule::StaticClass(), &SpawnLocation, &SpawnRotation, SpawnInfo));
-	SwingCollision->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	try
+	{
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		const FVector SpawnLocation = OwningActor->GetActorLocation();
+		const FRotator SpawnRotation = OwningActor->GetActorRotation();
+		SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(SwingCollisionClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
+		// SwingCollision->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	}
+	catch (...)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault JP02: And Error Occured With AttackComponent"));
+	}
 
-	SwingCollision->Tags.AddUnique("AttackSystemTemp");
+	try
+	{
+		SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
+		SwingCollision->CurrentRotation = SwingCollision->StartRotation;
+		SwingCollision->MaxRotation = SwingCollision->CurrentRotation + 180.f;
+	}
+	catch (...)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault JP01: And Error Occured With AttackComponent"));
+	}
+	
+
+	// SwingCollision->Tags.AddUnique("AttackSystemTemp");
 
 	bIsSwinging = true;
 }

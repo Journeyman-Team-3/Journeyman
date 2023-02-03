@@ -23,18 +23,18 @@ public:
 	// Sets default values for this component's properties
 	UAttackComponent();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AAttackSwingCapsule> SwingCollisionClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AAttackSwingCapsule* SwingCollision;
+
 private:
 	bool bIsSwinging;
 
-	UPROPERTY(EditAnywhere)
-	float RotationSpeed = 360.f;
-
-	float CurrentRotation = 0.f;
-	float MaxRotation = 180.f;
-
 	AActor* OwningActor;
 
-	AAttackSwingCapsule* SwingCollision;
+	
 
 protected:
 	

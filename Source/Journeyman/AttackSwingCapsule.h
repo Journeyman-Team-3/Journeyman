@@ -16,8 +16,20 @@ public:
 	// Sets default values for this actor's properties
 	AAttackSwingCapsule();
 
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* CentrePoint;
+
+	UPROPERTY(EditAnywhere)
 	UCapsuleComponent* SwingColision;
+
+	UPROPERTY(EditAnywhere)
+	float RotationSpeed = 360.f;
+	float StartRotation = 0.f;
+	float CurrentRotation = 0.f;
+	float MaxRotation = 180.f;
+
+private:
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,5 +43,8 @@ private:
 	void Damage(AActor* OverlappedActor);
 
 	void OnOverlapBeginSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
+	void OnHitSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
 
 };
+
+
