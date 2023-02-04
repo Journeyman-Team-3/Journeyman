@@ -23,7 +23,7 @@ public:
 	// Sets default values for this component's properties
 	UAttackComponent();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<AAttackSwingCapsule> SwingCollisionClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -51,6 +51,8 @@ private:
 	void SwingAttack();
 
 	float FindMaxRotation(float StartRotation);
+
+	bool IsBetween(float CurrentRotation, float MaxRotation, float MarginForError);
 
 
 protected:
