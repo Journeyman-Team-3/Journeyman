@@ -35,7 +35,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (bIsSwinging)
 	{
-		if (SwingCollision->CurrentRotation != SwingCollision->MaxRotation)
+		if (SwingCollision->CurrentRotation < SwingCollision->MaxRotation)
 		{
 			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * SwingCollision->RotationSpeed);
 			
@@ -48,11 +48,8 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 		else
 		{
-			AActor* ComponentToDelete = UGameplayStatics::GetActorOfClass(GetWorld(), AAttackSwingCapsule::StaticClass());
-
-			ComponentToDelete->Destroy();
-
-			SwingCollision->CurrentRotation = 0.f;
+			SwingCollision->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			SwingCollision->Destroy();
 		} 
 	}
 }
@@ -87,14 +84,50 @@ void UAttackComponent::SwingAttack()
 	const FRotator SpawnRotation = OwningActor->GetActorRotation();
 	SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(SwingCollisionClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
 
+	if (SwingCollision == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: SwingCollision = nullptr - has it been set on the owning actor?"));
+		return;
+	}
+	
 	SwingCollision->AttachToActor(OwningActor, FAttachmentTransformRules::KeepWorldTransform);
 
 	SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
 	SwingCollision->CurrentRotation = SwingCollision->StartRotation;
-	SwingCollision->MaxRotation = SwingCollision->CurrentRotation + 180.f;
+	SwingCollision->MaxRotation = FindMaxRotation(SwingCollision->StartRotation);
 	
 	// SwingCollision->Tags.AddUnique("AttackSystemTemp");
 
 	bIsSwinging = true;
+}
+
+float UAttackComponent::FindMaxRotation(float StartRotation)
+{
+	if (StartRotation >= 0 && StartRotation <= 180.f)
+	{
+		float TempNum = StartRotation + 180.f;
+		if (TempNum > 180.f)
+		{
+			return StartRotation - 180;
+		}
+		// TODO: Might Not Be Needed
+		else
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		float TempNum = StartRotation + 180;
+		if (TempNum < 0)
+		{
+			return StartRotation + 180;
+		}
+		// TODO: Might Not Be Needed
+		else
+		{
+			return 0;
+		}
+	}
 }
 

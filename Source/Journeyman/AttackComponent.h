@@ -50,6 +50,8 @@ public:
 private:
 	void SwingAttack();
 
+	float FindMaxRotation(float StartRotation);
+
 
 protected:
 	// Called when the game starts
