@@ -23,17 +23,25 @@ public:
 	UCapsuleComponent* SwingColision;
 
 	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditAnywhere)
 	float RotationSpeed = 360.f;
 	float StartRotation = 0.f;
 	float CurrentRotation = 0.f;
 	float MaxRotation = 180.f;
 
+	AActor* ComponentOwningPawn;
+
 private:
-	
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHitActor(AActor* HitActor);
 
 public:	
 	// Called every frame
@@ -42,6 +50,7 @@ public:
 private:
 	void Damage(AActor* OverlappedActor);
 
+	UFUNCTION()
 	void OnOverlapBeginSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
 	void OnHitSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
 
