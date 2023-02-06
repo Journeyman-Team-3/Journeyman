@@ -96,13 +96,13 @@ void UAttackComponent::SwingAttack()
 	const FRotator SpawnRotation = OwningActor->GetActorRotation();
 	SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(SwingCollisionClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
 
-	SwingCollision->ComponentOwningPawn = OwningActor;
-
 	if (SwingCollision == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: SwingCollision = nullptr - has it been set on the owning actor?"));
 		return;
 	}
+
+	SwingCollision->ComponentOwningPawn = OwningActor;
 	
 	SwingCollision->AttachToActor(OwningActor, FAttachmentTransformRules::KeepWorldTransform);
 
