@@ -128,7 +128,7 @@ void UAttackComponent::RangeAttack()
 	const FVector SpawnLocation = OwningActor->GetActorLocation();
 	const FRotator SpawnRotation = OwningActor->GetActorRotation();
 
-	AActor 
+	// AActor* Projectile = GetWorld()->SpawnActor();
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)
