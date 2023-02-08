@@ -23,18 +23,20 @@ public:
 	// Sets default values for this component's properties
 	UAttackComponent();
 
+	// Swing
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AAttackSwingCapsule> SwingCollisionClass;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AAttackSwingCapsule* SwingCollision;
+
+	// Range
 
 private:
+	// Swing
 	bool bIsSwinging;
-
 	AActor* OwningActor;
+	UPROPERTY()
+	AAttackSwingCapsule* SwingCollision;
 
-	
+	// Range
 
 protected:
 	
@@ -49,10 +51,11 @@ public:
 
 private:
 	void SwingAttack();
+	void RangeAttack();
+	bool IsBetween(float CurrentValue, float MaxValue, float MarginForError);
 
+	// Swing
 	float FindMaxRotation(float StartRotation);
-
-	bool IsBetween(float CurrentRotation, float MaxRotation, float MarginForError);
 
 
 protected:

@@ -115,6 +115,22 @@ void UAttackComponent::SwingAttack()
 	bIsSwinging = true;
 }
 
+void UAttackComponent::RangeAttack()
+{
+	if (OwningActor == nullptr)
+	{
+		return;
+	}
+
+	// Spawn Information
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const FVector SpawnLocation = OwningActor->GetActorLocation();
+	const FRotator SpawnRotation = OwningActor->GetActorRotation();
+
+	AActor 
+}
+
 float UAttackComponent::FindMaxRotation(float StartRotation)
 {
 	if (StartRotation >= 0 && StartRotation <= 180.f)
@@ -159,9 +175,9 @@ float UAttackComponent::FindMaxRotation(float StartRotation)
 	
 }
 
-bool UAttackComponent::IsBetween(float CurrentRotation, float MaxRotation, float MarginForError)
+bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float MarginForError)
 {
-	if (CurrentRotation >= MaxRotation - MarginForError && CurrentRotation <= MaxRotation + MarginForError)
+	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
 	{
 		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("IsBetween() - Returns True")));
 		return true;
