@@ -5,7 +5,9 @@
 #include "Components/StaticMeshComponent.h"
 #include <Components/CapsuleComponent.h>
 
+#include "Engine/StaticMesh.h"
 #include "AttackSwingCapsule.h"
+#include "RangeProjectile.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -127,8 +129,8 @@ void UAttackComponent::RangeAttack()
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	const FVector SpawnLocation = OwningActor->GetActorLocation();
 	const FRotator SpawnRotation = OwningActor->GetActorRotation();
-
-	// AActor* Projectile = GetWorld()->SpawnActor();
+	
+	RangeProjectile = Cast<ARangeProjectile>(GetWorld()->SpawnActor(RangeProjectileClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AttackSwingCapsule.h"
+#include "RangeProjectile.h"
 #include "Components/ActorComponent.h"
 #include "AttackComponent.generated.h"
 
@@ -28,6 +29,7 @@ public:
 	TSubclassOf<AAttackSwingCapsule> SwingCollisionClass;
 
 	// Range
+	TSubclassOf<ARangeProjectile> RangeProjectileClass;
 
 private:
 	// Swing
@@ -37,6 +39,7 @@ private:
 	AAttackSwingCapsule* SwingCollision;
 
 	// Range
+	ARangeProjectile* RangeProjectile;
 
 protected:
 	
