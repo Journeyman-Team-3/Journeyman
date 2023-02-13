@@ -38,9 +38,6 @@ private:
 	UPROPERTY()
 	AAttackSwingCapsule* SwingCollision;
 
-	// Range
-	ARangeProjectile* RangeProjectile;
-
 protected:
 	
 
@@ -50,11 +47,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(EAttackType AttackType);
+	void Attack(EAttackType AttackType, TSubclassOf<AActor> AttackActor);
 
 private:
 	void SwingAttack();
-	void RangeAttack();
+	void RangeAttack(TSubclassOf<AActor> Projectile);
 	bool IsBetween(float CurrentValue, float MaxValue, float MarginForError);
 
 	// Swing

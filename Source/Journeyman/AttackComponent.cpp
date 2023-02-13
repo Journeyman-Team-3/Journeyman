@@ -61,16 +61,26 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
-void UAttackComponent::Attack(EAttackType AttackType) 
+void UAttackComponent::Attack(EAttackType AttackType, TSubclassOf<AActor> AttackActor) 
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("AttackActor Class: %s"), *AttackActor));
 	switch (AttackType)
 	{
 	case EAttackType::Swing:
-		SwingAttack();
+		if (Cast<AAttackSwingCapsule>(AttackActor->GetClass()) != nullptr)
+		{
+			SwingAttack();
+			break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type"));
 		break;
 	case EAttackType::Range:
-		break;
-	default:
+		if (Cast<ARangeProjectile>(AttackActor.GetDefaultObject()) != nullptr)
+		{
+			RangeAttack(AttackActor);
+			break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type"));
 		break;
 	}
 }
@@ -117,7 +127,7 @@ void UAttackComponent::SwingAttack()
 	bIsSwinging = true;
 }
 
-void UAttackComponent::RangeAttack()
+void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 {
 	if (OwningActor == nullptr)
 	{
@@ -130,7 +140,7 @@ void UAttackComponent::RangeAttack()
 	const FVector SpawnLocation = OwningActor->GetActorLocation();
 	const FRotator SpawnRotation = OwningActor->GetActorRotation();
 	
-	RangeProjectile = Cast<ARangeProjectile>(GetWorld()->SpawnActor(RangeProjectileClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
+	ARangeProjectile* RangeProjectile = Cast<ARangeProjectile>(GetWorld()->SpawnActor(Projectile, &SpawnLocation, &SpawnRotation, SpawnInfo));
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)
