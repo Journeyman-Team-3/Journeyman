@@ -39,7 +39,11 @@ private:
 	AAttackSwingCapsule* SwingCollision;
 
 protected:
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	FVector SpawnOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	TSubclassOf<class ARangeProjectile> ProjectileClass;
 
 // FUNCTIONS
 public:	

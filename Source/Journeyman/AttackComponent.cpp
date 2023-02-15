@@ -129,18 +129,36 @@ void UAttackComponent::SwingAttack()
 
 void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 {
-	if (OwningActor == nullptr)
+	if (Projectile == nullptr)
 	{
 		return;
 	}
 
-	// Spawn Information
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	const FVector SpawnLocation = OwningActor->GetActorLocation();
-	const FRotator SpawnRotation = OwningActor->GetActorRotation();
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	OwningActor->GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+	SpawnOffset.Set(100.f, 0.f, 0.f);
+
+	FVector SpawnLocation = CameraLocation + FTransform(CameraRotation).TransformVector(SpawnOffset);
+
+	FRotator SpawnRotation = CameraRotation;
+	SpawnRotation.Pitch += 10.f;
+
+	UWorld* World = GetWorld();
+
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = OwningActor;
+	SpawnParams.Instigator = OwningActor->GetInstigator();
+
+	ARangeProjectile* ProjectileInstance = World->SpawnActor<ARangeProjectile>(Projectile, SpawnLocation, SpawnRotation, SpawnParams);
+
 	
-	ARangeProjectile* RangeProjectile = Cast<ARangeProjectile>(GetWorld()->SpawnActor(Projectile, &SpawnLocation, &SpawnRotation, SpawnInfo));
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)

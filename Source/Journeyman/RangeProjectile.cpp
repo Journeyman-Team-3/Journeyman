@@ -9,13 +9,30 @@ ARangeProjectile::ARangeProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene Component"));
+    if (!RootComponent)
+    {
+	    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Scene Component"));
+    }
 
-	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
-	ProjectileMesh->AttachTo(this->RootComponent);
+    if (!CollisionComponent)
+    {
+	    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Component"));
+    	CollisionComponent->InitSphereRadius(CollisionRadius);
 
-	ProjectileCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Projectile Collision"));
-	ProjectileCollision->AttachTo(this->ProjectileMesh);
+    	RootComponent = CollisionComponent;
+    }
+
+    if (!ProjectileMovementComponent)
+    {
+	    ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
+    	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
+    	ProjectileMovementComponent->InitialSpeed = InitialSpeed;
+    	ProjectileMovementComponent->MaxSpeed = MaxSpeed;
+    	ProjectileMovementComponent->bRotationFollowsVelocity = true;
+    	ProjectileMovementComponent->bShouldBounce = true;
+    	ProjectileMovementComponent->Bounciness = 0.3f;
+    	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
+    }
 }
 
 // Called when the game starts or when spawned
@@ -30,5 +47,10 @@ void ARangeProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ARangeProjectile::FireInDirection(const FVector& ShootDirection)
+{
+	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
 }
 
