@@ -26,8 +26,6 @@ ARangeProjectile::ARangeProjectile()
     {
 	    ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
     	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
-    	ProjectileMovementComponent->InitialSpeed = InitialSpeed;
-    	ProjectileMovementComponent->MaxSpeed = MaxSpeed;
     	ProjectileMovementComponent->bRotationFollowsVelocity = true;
     	ProjectileMovementComponent->bShouldBounce = true;
     	ProjectileMovementComponent->Bounciness = 0.3f;
@@ -39,6 +37,12 @@ ARangeProjectile::ARangeProjectile()
 void ARangeProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!ProjectileMovementComponent)
+	{
+		ProjectileMovementComponent->InitialSpeed = InitialSpeed;
+		ProjectileMovementComponent->MaxSpeed = MaxSpeed;
+	}
 	
 }
 

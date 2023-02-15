@@ -67,7 +67,7 @@ void UAttackComponent::Attack(EAttackType AttackType, TSubclassOf<AActor> Attack
 	switch (AttackType)
 	{
 	case EAttackType::Swing:
-		if (Cast<AAttackSwingCapsule>(AttackActor->GetClass()) != nullptr)
+		if (Cast<AAttackSwingCapsule>(AttackActor->GetDefaultObject()) != nullptr)
 		{
 			SwingAttack();
 			break;
@@ -134,15 +134,11 @@ void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 		return;
 	}
 
-	FVector CameraLocation;
-	FRotator CameraRotation;
-	OwningActor->GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
 	SpawnOffset.Set(100.f, 0.f, 0.f);
 
-	FVector SpawnLocation = CameraLocation + FTransform(CameraRotation).TransformVector(SpawnOffset);
+	FVector SpawnLocation = OwningActor->GetActorForwardVector() + FTransform(OwningActor->GetActorForwardVector().Rotation()).TransformVector(SpawnOffset);
 
-	FRotator SpawnRotation = CameraRotation;
+	FRotator SpawnRotation = OwningActor->GetActorForwardVector().Rotation();
 	SpawnRotation.Pitch += 10.f;
 
 	UWorld* World = GetWorld();
