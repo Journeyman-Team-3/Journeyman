@@ -26,6 +26,20 @@ void UAttackComponent::BeginPlay()
 
 	// Makes sure we have a reference to the actor the the component is attached too
 	OwningActor = GetOwner();
+
+	ProjectileSpawnLocation = NewObject<UArrowComponent>(OwningActor, UArrowComponent::StaticClass(), TEXT("Projectile Spawn Location"));
+
+	if (ProjectileSpawnLocation)
+	{
+		ProjectileSpawnLocation->RegisterComponent();
+
+		ProjectileSpawnLocation->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
+		ProjectileSpawnLocation->CreationMethod = EComponentCreationMethod::Instance;
+
+		ProjectileSpawnLocation->SetHiddenInGame(false);
+		ProjectileSpawnLocation->SetVisibility(true);
+	}
 	
 }
 
@@ -37,8 +51,6 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (bIsSwinging)
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Start Rotation: %f; Current Rotation: %f; Max Rotation: %f;"),SwingCollision->StartRotation, SwingCollision->CurrentRotation, SwingCollision->MaxRotation));
-		// if (SwingCollision->CurrentRotation != SwingCollision->MaxRotation)
 		if (!IsBetween(SwingCollision->CurrentRotation, SwingCollision->MaxRotation, 5.f))
 		{
 			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * SwingCollision->RotationSpeed);
@@ -52,7 +64,6 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 		else
 		{
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Destroyed Swing Due To Swing End")));
 			bIsSwinging = false;
 			
 			SwingCollision->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
@@ -136,10 +147,10 @@ void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 
 	SpawnOffset.Set(100.f, 0.f, 0.f);
 
-	FVector SpawnLocation = OwningActor->GetActorForwardVector() + FTransform(OwningActor->GetActorForwardVector().Rotation()).TransformVector(SpawnOffset);
+	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
+	SpawnLocation += SpawnOffset;
 
 	FRotator SpawnRotation = OwningActor->GetActorForwardVector().Rotation();
-	SpawnRotation.Pitch += 10.f;
 
 	UWorld* World = GetWorld();
 

@@ -6,6 +6,7 @@
 #include "AttackSwingCapsule.h"
 #include "RangeProjectile.h"
 #include "Components/ActorComponent.h"
+#include "Components/ArrowComponent.h"
 #include "AttackComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -25,7 +26,7 @@ public:
 	UAttackComponent();
 
 	// Swing
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category=Components)
 	TSubclassOf<AAttackSwingCapsule> SwingCollisionClass;
 
 	// Range
@@ -35,6 +36,7 @@ private:
 	// Swing
 	bool bIsSwinging;
 	AActor* OwningActor;
+	
 	UPROPERTY()
 	AAttackSwingCapsule* SwingCollision;
 
@@ -44,6 +46,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class ARangeProjectile> ProjectileClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
+	UArrowComponent* ProjectileSpawnLocation;
 
 // FUNCTIONS
 public:	
