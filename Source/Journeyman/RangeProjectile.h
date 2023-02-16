@@ -28,18 +28,28 @@ public:
 
 	UPROPERTY(EditAnywhere, Category=Projectile)
 	float MaxSpeed = 3000.f;
+
+	AActor* ComponentOwningPawn;
 	
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHitActor(AActor* HitActor);
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	USphereComponent* CollisionComponent;
 
+	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
+	UStaticMeshComponent* ProjectileMeshComponent;
+
 	UPROPERTY(VisibleAnywhere, Category=Movement)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
-	void FireInDirection(const FVector& ShootDirection);
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
+
 };

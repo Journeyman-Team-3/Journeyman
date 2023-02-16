@@ -132,8 +132,6 @@ void UAttackComponent::SwingAttack()
 	SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
 	SwingCollision->CurrentRotation = SwingCollision->StartRotation;
 	SwingCollision->MaxRotation = FindMaxRotation(SwingCollision->StartRotation);
-	
-	// SwingCollision->Tags.AddUnique("AttackSystemTemp");
 
 	bIsSwinging = true;
 }
@@ -142,13 +140,13 @@ void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 {
 	if (Projectile == nullptr)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: Projectile = nullptr"));
 		return;
 	}
 
-	SpawnOffset.Set(100.f, 0.f, 0.f);
-
+	ProjectileSpawnLocation->SetRelativeLocation(SpawnOffset);
+	
 	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
-	SpawnLocation += SpawnOffset;
 
 	FRotator SpawnRotation = OwningActor->GetActorForwardVector().Rotation();
 
@@ -156,6 +154,7 @@ void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 
 	if (World == nullptr)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: World = nullptr"));
 		return;
 	}
 
@@ -164,47 +163,33 @@ void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 	SpawnParams.Instigator = OwningActor->GetInstigator();
 
 	ARangeProjectile* ProjectileInstance = World->SpawnActor<ARangeProjectile>(Projectile, SpawnLocation, SpawnRotation, SpawnParams);
-
 	
+	// ProjectileInstance->ComponentOwningPawn = OwningActor;
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)
 {
 	if (StartRotation >= 0 && StartRotation <= 180.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Start Rotation: %f is Positive"), StartRotation);
 		float TempNum = StartRotation + 180.f;
 		if (TempNum > 180.f)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Gretaer Than 180"), TempNum);
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation - 180));
-			UE_LOG(LogTemp, Warning, TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation - 180);
 			return StartRotation - 180;
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Less Than 180"), TempNum);
-			// TODO: Might Not Be Needed
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("ELSE: StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation - 180));
 			return StartRotation - 180;
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Start Rotation: %f is Negative"), StartRotation);
 		float TempNum = StartRotation + 180;
 		if (TempNum < 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Less Than Zero"), TempNum);
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation + 180));
-			UE_LOG(LogTemp, Warning, TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation + 180);
 			return StartRotation + 180;
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Greater Than Zero"), TempNum);
-			// TODO: Might Not Be Needed
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("ELSE: StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation + 180));
 			return StartRotation + 180;
 		}
 	}
@@ -216,7 +201,6 @@ bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float Margi
 {
 	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("IsBetween() - Returns True")));
 		return true;
 	}
 	
