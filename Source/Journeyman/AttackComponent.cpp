@@ -74,7 +74,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAttackComponent::Attack(EAttackType AttackType, TSubclassOf<AActor> AttackActor) 
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("AttackActor Class: %s"), *AttackActor));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("AttackActor Class: %s"), *AttackActor));
 	switch (AttackType)
 	{
 	case EAttackType::Swing:
@@ -164,7 +164,7 @@ void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 
 	ARangeProjectile* ProjectileInstance = World->SpawnActor<ARangeProjectile>(Projectile, SpawnLocation, SpawnRotation, SpawnParams);
 	
-	// ProjectileInstance->ComponentOwningPawn = OwningActor;
+	ProjectileInstance->ComponentOwningPawn = OwningActor;
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)

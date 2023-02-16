@@ -15,7 +15,8 @@ ARangeProjectile::ARangeProjectile()
     {
 	    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Component"));
     	CollisionComponent->InitSphereRadius(CollisionRadius);
-
+    	CollisionComponent->SetGenerateOverlapEvents(true);
+    	CollisionComponent->SetCollisionProfileName(TEXT("SwingAttack"));
     	CollisionComponent->AttachTo(this->RootComponent);
     }
 
@@ -56,7 +57,7 @@ void ARangeProjectile::BeginPlay()
 		return;
 	}
 
-	// CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARangeProjectile::OnOverlapBegin);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARangeProjectile::OnOverlapBegin);
 	
 }
 
@@ -67,15 +68,18 @@ void ARangeProjectile::Tick(float DeltaTime)
 
 }
 
-/*
 void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
 {
 	if (OtherActor != GetOwner())
 	{
-		OnHitActor(OtherActor);
+		if (OtherActor != this)
+		{
+			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile: Hit Actor = %s"), *OtherActor->GetName()));
+			OnHitActor(OtherActor);
+		}
 	}
 }
-*/
+
 
 
