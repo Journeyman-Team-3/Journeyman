@@ -56,7 +56,7 @@ void ARangeProjectile::BeginPlay()
 		return;
 	}
 
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARangeProjectile::OnOverlapBegin);
+	// CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARangeProjectile::OnOverlapBegin);
 	
 }
 
@@ -67,6 +67,7 @@ void ARangeProjectile::Tick(float DeltaTime)
 
 }
 
+/*
 void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
 {
@@ -75,5 +76,6 @@ void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 		OnHitActor(OtherActor);
 	}
 }
+*/
 
 
