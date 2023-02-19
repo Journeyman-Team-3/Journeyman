@@ -17,8 +17,6 @@ AAttackSwingCapsule::AAttackSwingCapsule()
 	SwingColision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Swing Collision"));
 	SwingColision->AttachTo(this->CentrePoint);
 
-	// SwingColision->SetHiddenInGame(false);
-	// SwingColision->SetVisibility(true);
 	SwingColision->SetGenerateOverlapEvents(true);
 	
 	SwingColision->SetCollisionProfileName(TEXT("SwingAttack"));
