@@ -7,7 +7,6 @@
 #include "RangeProjectile.h"
 #include "Components/ActorComponent.h"
 #include "Components/ArrowComponent.h"
-#include "EAttackType.h"
 #include "AttackComponent.generated.h"
 
 
