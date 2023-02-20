@@ -5,7 +5,6 @@
 #include "Entity.h"
 #include "EAttackType.h"
 #include "CoreMinimal.h"
-// #include "AttackComponent.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
