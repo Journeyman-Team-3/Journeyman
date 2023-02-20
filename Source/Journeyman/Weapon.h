@@ -22,6 +22,9 @@ public:
 	// Attack Type for the weapon, used to determine what to do when Attack is called.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		EAttackType weaponType = EAttackType::Null;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+		USkeletalMesh* weaponMesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		int32 baseDamage = 1; // may want to put this on projectiles, made with scythe in mind
