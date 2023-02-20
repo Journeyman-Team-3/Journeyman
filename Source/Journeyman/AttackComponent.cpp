@@ -103,6 +103,22 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 
 void UAttackComponent::SwingAttack()
 {
+	// Using animation montages
+	// Attach weapon to character
+	// Play the montage
+	// While playing draw line trace between two points
+	// These two points will be set on the skelatal mesh for the weapon
+	// Stop drawing line traces when montage has finished
+	// Done using notifies
+
+
+
+
+
+
+
+
+	
 	// Checks if it is not null, if it is then return
 	if (OwningActor == nullptr)
 	{
