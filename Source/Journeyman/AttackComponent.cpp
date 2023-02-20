@@ -5,6 +5,7 @@
 
 #include "AttackSwingCapsule.h"
 #include "RangeProjectile.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -45,28 +46,6 @@ void UAttackComponent::BeginPlay()
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (bIsSwinging)
-	{
-		if (!IsBetween(SwingCollision->CurrentRotation, SwingCollision->MaxRotation, 5.f))
-		{
-			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * SwingCollision->RotationSpeed);
-			
-			SwingCollision->SetActorRotation(FRotator(
-				SwingCollision->GetActorRotation().Pitch,
-				NewYaw,
-				SwingCollision->GetActorRotation().Roll));
-
-			SwingCollision->CurrentRotation = NewYaw;
-		}
-		else
-		{
-			bIsSwinging = false;
-			
-			SwingCollision->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-			SwingCollision->Destroy();
-		} 
-	}
 }
 
 void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor) 
@@ -82,10 +61,10 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 	case EAttackType::Melee:
 		if (Cast<AAttackSwingCapsule>(AttackActor->GetDefaultObject()) != nullptr)
 		{
-			SwingAttack();
+			SwingAttack(AttackActor);
 			break;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type"));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Melee"));
 		break;
 	case EAttackType::Range:
 		if (Cast<ARangeProjectile>(AttackActor.GetDefaultObject()) != nullptr)
@@ -93,7 +72,7 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 			RangeAttack(AttackActor);
 			break;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type"));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Range"));
 		break;
 	case EAttackType::Null:
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component weaponType on Actor of Class Type AWeapon: has not been set"));
@@ -101,7 +80,7 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 	}
 }
 
-void UAttackComponent::SwingAttack()
+void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 {
 	// Using animation montages
 	// Attach weapon to character
@@ -111,14 +90,48 @@ void UAttackComponent::SwingAttack()
 	// Stop drawing line traces when montage has finished
 	// Done using notifies
 
+	USkeletalMeshComponent* OwningActorMeshComp = Cast<USkeletalMeshComponent>(OwningActor->FindComponentByClass(USkeletalMeshComponent::StaticClass()));
 
+	USkeletalMeshComponent* WeaponMesh = NewObject<USkeletalMeshComponent>(OwningActor, USkeletalMeshComponent::StaticClass(), TEXT("Weapon Mesh"));
 
-
-
-
-
-
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
+		WeaponMesh->RegisterComponent();
+		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
+		
+		OwningActor->AddInstanceComponent(WeaponMesh);
+	}
 	
+	bool bAttackOnce = true;
+
+	if (bAttackOnce)
+	{
+		bAttackOnce = false;
+
+		UAnimInstance* AnimInstance = OwningActorMeshComp->GetAnimInstance();
+
+		if (AnimInstance != nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
+			float animTime = AnimInstance->Montage_Play(AttackAnimation);
+
+			FTimerHandle DelayTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+				// Resets so that the player can attack again
+				bAttackOnce = true;
+			}, animTime, false);
+		}
+	}
+
+
+
+
+
+
+	/*
 	// Checks if it is not null, if it is then return
 	if (OwningActor == nullptr)
 	{
@@ -155,6 +168,7 @@ void UAttackComponent::SwingAttack()
 	SwingCollision->MaxRotation = FindMaxRotation(SwingCollision->StartRotation);
 
 	bIsSwinging = true;
+	*/
 }
 
 void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)

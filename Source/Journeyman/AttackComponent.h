@@ -46,6 +46,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	UArrowComponent* ProjectileSpawnLocation;
 
+	UPROPERTY(EditAnywhere, Category=Gameplay)
+	UAnimMontage* AttackAnimation;
+
 // FUNCTIONS
 public:	
 	// Called every frame
@@ -55,7 +58,7 @@ public:
 	void Attack(TSubclassOf<AWeapon> AttackActor);
 
 private:
-	void SwingAttack();
+	void SwingAttack(TSubclassOf<AWeapon> Weapon);
 	void RangeAttack(TSubclassOf<AActor> Projectile);
 	bool IsBetween(float CurrentValue, float MaxValue, float MarginForError);
 
