@@ -71,6 +71,12 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor) 
 {
+	if (AttackActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor is nullptr"));
+		return;
+	}
+	
 	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
 	case EAttackType::Melee:
