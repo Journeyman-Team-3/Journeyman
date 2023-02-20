@@ -2,10 +2,7 @@
 
 
 #include "AttackComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include <Components/CapsuleComponent.h>
 
-#include "Engine/StaticMesh.h"
 #include "AttackSwingCapsule.h"
 #include "RangeProjectile.h"
 #include "Kismet/GameplayStatics.h"
