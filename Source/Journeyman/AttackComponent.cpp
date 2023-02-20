@@ -72,12 +72,11 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
-void UAttackComponent::Attack(EAttackType AttackType, TSubclassOf<AActor> AttackActor) 
+void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor) 
 {
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("AttackActor Class: %s"), *AttackActor));
-	switch (AttackType)
+	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
-	case EAttackType::Swing:
+	case EAttackType::Melee:
 		if (Cast<AAttackSwingCapsule>(AttackActor->GetDefaultObject()) != nullptr)
 		{
 			SwingAttack();
@@ -92,6 +91,9 @@ void UAttackComponent::Attack(EAttackType AttackType, TSubclassOf<AActor> Attack
 			break;
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type"));
+		break;
+	case EAttackType::Null:
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component weaponType on Actor of Class Type AWeapon: has not been set"));
 		break;
 	}
 }

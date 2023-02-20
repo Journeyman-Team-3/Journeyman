@@ -7,13 +7,10 @@
 #include "RangeProjectile.h"
 #include "Components/ActorComponent.h"
 #include "Components/ArrowComponent.h"
+#include "EAttackType.h"
 #include "AttackComponent.generated.h"
 
-UENUM(BlueprintType)
-enum class EAttackType : uint8 {
-	Swing,
-	Range
-};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class JOURNEYMAN_API UAttackComponent : public UActorComponent
@@ -56,7 +53,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(EAttackType AttackType, TSubclassOf<AActor> AttackActor);
+	void Attack(TSubclassOf<AWeapon> AttackActor);
 
 private:
 	void SwingAttack();
