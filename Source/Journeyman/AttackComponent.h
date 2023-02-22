@@ -9,11 +9,7 @@
 #include "Components/ArrowComponent.h"
 #include "AttackComponent.generated.h"
 
-UENUM(BlueprintType)
-enum class EAttackType : uint8 {
-	Swing,
-	Range
-};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class JOURNEYMAN_API UAttackComponent : public UActorComponent
@@ -50,16 +46,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	UArrowComponent* ProjectileSpawnLocation;
 
+	UPROPERTY(EditAnywhere, Category=Gameplay)
+	UAnimMontage* AttackAnimation;
+
 // FUNCTIONS
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(EAttackType AttackType, TSubclassOf<AActor> AttackActor);
+	void Attack(TSubclassOf<AWeapon> AttackActor);
 
 private:
-	void SwingAttack();
+	void SwingAttack(TSubclassOf<AWeapon> Weapon);
 	void RangeAttack(TSubclassOf<AActor> Projectile);
 	bool IsBetween(float CurrentValue, float MaxValue, float MarginForError);
 
