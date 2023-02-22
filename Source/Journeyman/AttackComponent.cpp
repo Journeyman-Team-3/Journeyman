@@ -125,7 +125,12 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			}, animTime, false);
 		}
 	}
+	// TODO: Get Socket Locations
+	FVector StartLocation;
+	FVector EndLocation;
 
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic);
 
 
 
