@@ -96,6 +96,7 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 	if (WeaponMesh)
 	{
+		// WeaponMesh->SetVisibility(true);
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
 		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
 		WeaponMesh->RegisterComponent();
@@ -121,7 +122,7 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
 				// Resets so that the player can attack again
-				
+				// WeaponMesh->SetVisibility(false);
 				bAttackOnce = true;
 			}, animTime, false);
 		}
