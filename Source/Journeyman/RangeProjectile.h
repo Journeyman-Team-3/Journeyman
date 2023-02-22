@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Weapon.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "RangeProjectile.generated.h"
 
 UCLASS()
-class JOURNEYMAN_API ARangeProjectile : public AActor
+class JOURNEYMAN_API ARangeProjectile : public AWeapon
 {
 	GENERATED_BODY()
 	
@@ -36,7 +37,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, meta=(DeprecatedFunction, DeprecationMessage="Function Currently Not In Use - Any Nodes Added Here Will Not Be Called"))
 	void OnHitActor(AActor* HitActor);
 
 private:
