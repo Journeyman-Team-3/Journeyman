@@ -97,8 +97,8 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 	if (WeaponMesh)
 	{
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
-		WeaponMesh->RegisterComponent();
 		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
+		WeaponMesh->RegisterComponent();
 		
 		OwningActor->AddInstanceComponent(WeaponMesh);
 	}
@@ -121,16 +121,20 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
 				// Resets so that the player can attack again
+				
 				bAttackOnce = true;
 			}, animTime, false);
 		}
 	}
+	/*
 	// TODO: Get Socket Locations
 	FVector StartLocation;
 	FVector EndLocation;
 
 	FHitResult HitResult;
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic);
+
+	*/
 
 
 
