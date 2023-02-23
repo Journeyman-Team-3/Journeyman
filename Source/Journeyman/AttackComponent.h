@@ -33,6 +33,8 @@ private:
 	bool bIsSwinging;
 	AActor* OwningActor;
 	
+	bool bAttackOnce = true;
+	
 	UPROPERTY()
 	AAttackSwingCapsule* SwingCollision;
 

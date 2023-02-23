@@ -104,7 +104,7 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 		OwningActor->AddInstanceComponent(WeaponMesh);
 	}
 	
-	bool bAttackOnce = true;
+	// bAttackOnce = true;
 
 	if (bAttackOnce)
 	{
@@ -122,7 +122,8 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
 				// Resets so that the player can attack again
-				// WeaponMesh->SetVisibility(false);
+				WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+				WeaponMesh->SetVisibility(false);
 				bAttackOnce = true;
 			}, animTime, false);
 		}
