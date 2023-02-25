@@ -2,10 +2,10 @@
 
 
 #include "AttackComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include <Components/CapsuleComponent.h>
 
 #include "AttackSwingCapsule.h"
+#include "RangeProjectile.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -24,6 +24,20 @@ void UAttackComponent::BeginPlay()
 
 	// Makes sure we have a reference to the actor the the component is attached too
 	OwningActor = GetOwner();
+
+	ProjectileSpawnLocation = NewObject<UArrowComponent>(OwningActor, UArrowComponent::StaticClass(), TEXT("Projectile Spawn Location"));
+
+	if (ProjectileSpawnLocation)
+	{
+		ProjectileSpawnLocation->RegisterComponent();
+
+		ProjectileSpawnLocation->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
+		ProjectileSpawnLocation->CreationMethod = EComponentCreationMethod::Instance;
+
+		ProjectileSpawnLocation->SetHiddenInGame(false);
+		ProjectileSpawnLocation->SetVisibility(true);
+	}
 	
 }
 
@@ -32,49 +46,102 @@ void UAttackComponent::BeginPlay()
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (bIsSwinging)
-	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Start Rotation: %f; Current Rotation: %f; Max Rotation: %f;"),SwingCollision->StartRotation, SwingCollision->CurrentRotation, SwingCollision->MaxRotation));
-		// if (SwingCollision->CurrentRotation != SwingCollision->MaxRotation)
-		if (!IsBetween(SwingCollision->CurrentRotation, SwingCollision->MaxRotation, 5.f))
-		{
-			float NewYaw = SwingCollision->GetActorRotation().Yaw + (DeltaTime * SwingCollision->RotationSpeed);
-			
-			SwingCollision->SetActorRotation(FRotator(
-				SwingCollision->GetActorRotation().Pitch,
-				NewYaw,
-				SwingCollision->GetActorRotation().Roll));
-
-			SwingCollision->CurrentRotation = NewYaw;
-		}
-		else
-		{
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Destroyed Swing Due To Swing End")));
-			bIsSwinging = false;
-			
-			SwingCollision->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-			SwingCollision->Destroy();
-		} 
-	}
 }
 
-void UAttackComponent::Attack(EAttackType AttackType) 
+void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor) 
 {
-	switch (AttackType)
+	if (AttackActor == nullptr)
 	{
-	case EAttackType::Swing:
-		SwingAttack();
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor is nullptr"));
+		return;
+	}
+	
+	switch (AttackActor.GetDefaultObject()->weaponType)
+	{
+	case EAttackType::Melee:
+		if (Cast<AAttackSwingCapsule>(AttackActor->GetDefaultObject()) != nullptr)
+		{
+			SwingAttack(AttackActor);
+			break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Melee"));
 		break;
 	case EAttackType::Range:
+		if (Cast<ARangeProjectile>(AttackActor.GetDefaultObject()) != nullptr)
+		{
+			RangeAttack(AttackActor);
+			break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Range"));
 		break;
-	default:
+	case EAttackType::Null:
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component weaponType on Actor of Class Type AWeapon: has not been set"));
 		break;
 	}
 }
 
-void UAttackComponent::SwingAttack()
+void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 {
+	// Using animation montages
+	// Attach weapon to character
+	// Play the montage
+	// While playing draw line trace between two points
+	// These two points will be set on the skelatal mesh for the weapon
+	// Stop drawing line traces when montage has finished
+	// Done using notifies
+
+	USkeletalMeshComponent* OwningActorMeshComp = Cast<USkeletalMeshComponent>(OwningActor->FindComponentByClass(USkeletalMeshComponent::StaticClass()));
+
+	USkeletalMeshComponent* WeaponMesh = NewObject<USkeletalMeshComponent>(OwningActor, USkeletalMeshComponent::StaticClass(), TEXT("Weapon Mesh"));
+
+	if (WeaponMesh)
+	{
+		// WeaponMesh->SetVisibility(true);
+		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
+		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
+		WeaponMesh->RegisterComponent();
+		
+		OwningActor->AddInstanceComponent(WeaponMesh);
+	}
+	
+	bool bAttackOnce = true;
+
+	if (bAttackOnce)
+	{
+		bAttackOnce = false;
+
+		UAnimInstance* AnimInstance = OwningActorMeshComp->GetAnimInstance();
+
+		if (AnimInstance != nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
+			float animTime = AnimInstance->Montage_Play(AttackAnimation);
+
+			FTimerHandle DelayTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+				// Resets so that the player can attack again
+				// WeaponMesh->SetVisibility(false);
+				bAttackOnce = true;
+			}, animTime, false);
+		}
+	}
+	/*
+	// TODO: Get Socket Locations
+	FVector StartLocation;
+	FVector EndLocation;
+
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic);
+
+	*/
+
+
+
+
+
+	/*
 	// Checks if it is not null, if it is then return
 	if (OwningActor == nullptr)
 	{
@@ -109,49 +176,65 @@ void UAttackComponent::SwingAttack()
 	SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
 	SwingCollision->CurrentRotation = SwingCollision->StartRotation;
 	SwingCollision->MaxRotation = FindMaxRotation(SwingCollision->StartRotation);
-	
-	// SwingCollision->Tags.AddUnique("AttackSystemTemp");
 
 	bIsSwinging = true;
+	*/
+}
+
+void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
+{
+	if (Projectile == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: Projectile = nullptr"));
+		return;
+	}
+
+	ProjectileSpawnLocation->SetRelativeLocation(SpawnOffset);
+	
+	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
+
+	FRotator SpawnRotation = OwningActor->GetActorForwardVector().Rotation();
+
+	UWorld* World = GetWorld();
+
+	if (World == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: World = nullptr"));
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = OwningActor;
+	SpawnParams.Instigator = OwningActor->GetInstigator();
+
+	ARangeProjectile* ProjectileInstance = World->SpawnActor<ARangeProjectile>(Projectile, SpawnLocation, SpawnRotation, SpawnParams);
+	
+	ProjectileInstance->ComponentOwningPawn = OwningActor;
 }
 
 float UAttackComponent::FindMaxRotation(float StartRotation)
 {
 	if (StartRotation >= 0 && StartRotation <= 180.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Start Rotation: %f is Positive"), StartRotation);
 		float TempNum = StartRotation + 180.f;
 		if (TempNum > 180.f)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Gretaer Than 180"), TempNum);
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation - 180));
-			UE_LOG(LogTemp, Warning, TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation - 180);
 			return StartRotation - 180;
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Less Than 180"), TempNum);
-			// TODO: Might Not Be Needed
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("ELSE: StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation - 180));
 			return StartRotation - 180;
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Start Rotation: %f is Negative"), StartRotation);
 		float TempNum = StartRotation + 180;
 		if (TempNum < 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Less Than Zero"), TempNum);
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation + 180));
-			UE_LOG(LogTemp, Warning, TEXT("StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation + 180);
 			return StartRotation + 180;
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Temp Num: %f is Greater Than Zero"), TempNum);
-			// TODO: Might Not Be Needed
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("ELSE: StartNum: %f - MaxRotation: %f"), StartRotation, StartRotation + 180));
 			return StartRotation + 180;
 		}
 	}
@@ -159,11 +242,10 @@ float UAttackComponent::FindMaxRotation(float StartRotation)
 	
 }
 
-bool UAttackComponent::IsBetween(float CurrentRotation, float MaxRotation, float MarginForError)
+bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float MarginForError)
 {
-	if (CurrentRotation >= MaxRotation - MarginForError && CurrentRotation <= MaxRotation + MarginForError)
+	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("IsBetween() - Returns True")));
 		return true;
 	}
 	

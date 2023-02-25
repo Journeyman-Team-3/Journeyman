@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Weapon.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Actor.h"
 #include "AttackSwingCapsule.generated.h"
 
 UCLASS()
-class JOURNEYMAN_API AAttackSwingCapsule : public AActor
+class JOURNEYMAN_API AAttackSwingCapsule : public AWeapon
 {
 	GENERATED_BODY()
 	
@@ -16,22 +17,6 @@ public:
 	// Sets default values for this actor's properties
 	AAttackSwingCapsule();
 
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* CentrePoint;
-
-	UPROPERTY(EditAnywhere)
-	UCapsuleComponent* SwingColision;
-
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* WeaponMesh;
-
-	UPROPERTY(EditAnywhere)
-	float RotationSpeed = 360.f;
-	float StartRotation = 0.f;
-	float CurrentRotation = 0.f;
-	float MaxRotation = 180.f;
-
-	AActor* ComponentOwningPawn;
 
 private:
 
@@ -52,7 +37,6 @@ private:
 
 	UFUNCTION()
 	void OnOverlapBeginSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
-	void OnHitSwing(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
 
 };
 
