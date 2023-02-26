@@ -16,43 +16,10 @@ class JOURNEYMAN_API UAttackComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-// VARIABLES
 public:	
 	// Sets default values for this component's properties
 	UAttackComponent();
 
-	// Swing
-	UPROPERTY(EditAnywhere, Category=Components)
-	TSubclassOf<AAttackSwingCapsule> SwingCollisionClass;
-
-	// Range
-	TSubclassOf<ARangeProjectile> RangeProjectileClass;
-
-private:
-	// Swing
-	bool bIsSwinging;
-	AActor* OwningActor;
-	
-	bool bAttackOnce = true;
-	
-	UPROPERTY()
-	AAttackSwingCapsule* SwingCollision;
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	FVector SpawnOffset;
-
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class ARangeProjectile> ProjectileClass;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
-	UArrowComponent* ProjectileSpawnLocation;
-
-	UPROPERTY(EditAnywhere, Category=Gameplay)
-	UAnimMontage* AttackAnimation;
-
-// FUNCTIONS
-public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -60,18 +27,30 @@ public:
 	void Attack(TSubclassOf<AWeapon> AttackActor);
 
 private:
+	AActor* OwningActor;
+	
+	bool bAttackOnce = true;
+
+	void TriggerSword();
+
+	void SwordLineTrace();
+
 	void SwingAttack(TSubclassOf<AWeapon> Weapon);
-	void RangeAttack(TSubclassOf<AActor> Projectile);
+	void RangeAttack(TSubclassOf<AWeapon> Projectile);
 	bool IsBetween(float CurrentValue, float MaxValue, float MarginForError);
 
-	// Swing
-	float FindMaxRotation(float StartRotation);
-
+	USkeletalMeshComponent* WeaponMesh;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	FVector SpawnOffset;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
+	UArrowComponent* ProjectileSpawnLocation;
 
-		
+	UPROPERTY(EditAnywhere, Category=Gameplay)
+	UAnimMontage* AttackAnimation;
 };
