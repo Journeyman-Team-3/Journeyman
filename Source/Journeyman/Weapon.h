@@ -36,7 +36,9 @@ public:
 		float timeBetweenAttacks = .3f; 
 
 	UPROPERTY(BlueprintReadWrite, Category = "Custom Properties")
-		float gameTimeAtLastAttack; // store game time when attack is called 
+		float gameTimeAtLastAttack; // store game time when attack is called
+
+	AActor* OwningActor = nullptr;
 
 	// --How I am imagining the BP_Scythe implementation--
 	// attacking event trigger-> if (ammo > 0): Attack(), ammo -= 1;
@@ -46,6 +48,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -53,4 +56,5 @@ public:
 	// custom functions
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
 		void DealDamage(AEntity* _enty, int32 _dmg) { _enty->TakeDamage(_dmg); }
+	
 };

@@ -26,14 +26,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Attack(TSubclassOf<AWeapon> AttackActor);
 
+	void TriggerSword();
+	void StopTriggerSword();
+
 private:
 	AActor* OwningActor;
 	
 	bool bAttackOnce = true;
 
-	void TriggerSword();
-
 	void SwordLineTrace();
+
+	FTimerHandle SwordSwingTimerHandle;
 
 	void SwingAttack(TSubclassOf<AWeapon> Weapon);
 	void RangeAttack(TSubclassOf<AWeapon> Projectile);

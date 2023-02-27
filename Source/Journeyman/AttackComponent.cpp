@@ -54,6 +54,8 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor is nullptr"));
 		return;
 	}
+
+	AttackActor.GetDefaultObject()->OwningActor = OwningActor;
 	
 	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
@@ -125,14 +127,11 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			}, animTime, false);
 		}
 	}
-
-	TriggerSword();
 }
 
 void UAttackComponent::TriggerSword()
 {
-	FTimerHandle LineTraceTimer;
-	GetWorld()->GetTimerManager().SetTimer(LineTraceTimer, this, &UAttackComponent::SwordLineTrace, 0.01, true);
+	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.001, true);
 }
 
 void UAttackComponent::SwordLineTrace()
@@ -140,7 +139,7 @@ void UAttackComponent::SwordLineTrace()
 	FVector StartLocation = WeaponMesh->GetSocketLocation(TEXT("start"));
 	FVector EndLocation = WeaponMesh->GetSocketLocation(TEXT("end"));
 
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, -1, 0, 15);
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
 	
 	FHitResult HitResult;
 	bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera);
@@ -160,14 +159,19 @@ void UAttackComponent::SwordLineTrace()
 
 		if (HitActorDamage == nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: RangeProjectile: HitActor is nullptr"));
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
 			return;
 		}
 		
-		Cast<AWeapon>(WeaponMesh->GetOwner())->DealDamage(Cast<AEntity>(HitActor), Cast<AWeapon>(WeaponMesh->GetOwner())->baseDamage);
+		// Cast<AWeapon>(WeaponMesh->GetOwner())->DealDamage(Cast<AEntity>(HitActor), Cast<AWeapon>(WeaponMesh->GetOwner())->baseDamage);
 		HitActorDamage->Destroy();
 		// OnHitActor(OtherActor);
 	}
+}
+
+void UAttackComponent::StopTriggerSword()
+{
+	GetWorld()->GetTimerManager().ClearTimer(SwordSwingTimerHandle);
 }
 
 void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
