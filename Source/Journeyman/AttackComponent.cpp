@@ -55,7 +55,7 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 		return;
 	}
 
-	AttackActor.GetDefaultObject()->OwningActor = OwningActor;
+	// AttackActor.GetDefaultObject()->OwningActor = OwningActor;
 	
 	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
@@ -114,7 +114,7 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 		if (AnimInstance != nullptr)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
-			float animTime = AnimInstance->Montage_Play(AttackAnimation);
+			float animTime = AnimInstance->Montage_Play(Weapon.GetDefaultObject()->AttackAnimation);
 
 			FTimerHandle DelayTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
@@ -182,7 +182,7 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 		return;
 	}
 
-	ProjectileSpawnLocation->SetRelativeLocation(SpawnOffset);
+	ProjectileSpawnLocation->SetRelativeLocation(Projectile.GetDefaultObject()->SpawnOffset);
 	
 	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
 

@@ -48,12 +48,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	FVector SpawnOffset;
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	UArrowComponent* ProjectileSpawnLocation;
 
-	UPROPERTY(EditAnywhere, Category=Gameplay)
-	UAnimMontage* AttackAnimation;
+	
 };

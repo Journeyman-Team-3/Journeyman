@@ -23,8 +23,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		EAttackType weaponType = EAttackType::Null;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+	// Mesh held in the OwningActors hand
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditConditionHides="weaponType == EAttackType::Null"))
 		USkeletalMesh* weaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Range"))
+		FVector SpawnOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Melee"))
+		UAnimMontage* AttackAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		int32 baseDamage = 1; // may want to put this on projectiles, made with scythe in mind
@@ -37,8 +44,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Custom Properties")
 		float gameTimeAtLastAttack; // store game time when attack is called
-
-	AActor* OwningActor = nullptr;
 
 	// --How I am imagining the BP_Scythe implementation--
 	// attacking event trigger-> if (ammo > 0): Attack(), ammo -= 1;
