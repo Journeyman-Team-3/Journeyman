@@ -55,25 +55,15 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 		return;
 	}
 
-	// AttackActor.GetDefaultObject()->OwningActor = OwningActor;
+	CurrentWeapon = AttackActor.GetDefaultObject();
 	
 	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
 	case EAttackType::Melee:
-		if (Cast<AAttackSwingCapsule>(AttackActor->GetDefaultObject()) != nullptr)
-		{
-			SwingAttack(AttackActor);
-			break;
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Melee"));
+		SwingAttack(AttackActor);
 		break;
 	case EAttackType::Range:
-		if (Cast<ARangeProjectile>(AttackActor.GetDefaultObject()) != nullptr)
-		{
-			RangeAttack(AttackActor);
-			break;
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Range"));
+		RangeAttack(AttackActor);
 		break;
 	case EAttackType::Null:
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component weaponType on Actor of Class Type AWeapon: has not been set"));
@@ -131,7 +121,28 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 void UAttackComponent::TriggerSword()
 {
-	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.001, true);
+	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
+	AController* ActorController = OwningCharacter->GetController();
+
+	AAIController* AIOwningController = Cast<AAIController>(ActorController);
+
+	if (ActorController->IsLocalPlayerController())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
+		OwningCharacter->DisableInput(Cast<APlayerController>(ActorController));
+	}
+	else if (AIOwningController != nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
+	}
+
+	UMovementComponent* Movement = Cast<UMovementComponent>(OwningActor->GetComponentByClass(UMovementComponent::StaticClass()));
+	Movement->StopMovementImmediately();
+	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.0001, true);
 }
 
 void UAttackComponent::SwordLineTrace()
@@ -146,7 +157,7 @@ void UAttackComponent::SwordLineTrace()
 
 	if (Hit)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
 	}
 	
 	AActor* HitActor = nullptr;
@@ -163,7 +174,8 @@ void UAttackComponent::SwordLineTrace()
 			return;
 		}
 		
-		// Cast<AWeapon>(WeaponMesh->GetOwner())->DealDamage(Cast<AEntity>(HitActor), Cast<AWeapon>(WeaponMesh->GetOwner())->baseDamage);
+		// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
+		
 		HitActorDamage->Destroy();
 		// OnHitActor(OtherActor);
 	}
@@ -172,6 +184,25 @@ void UAttackComponent::SwordLineTrace()
 void UAttackComponent::StopTriggerSword()
 {
 	GetWorld()->GetTimerManager().ClearTimer(SwordSwingTimerHandle);
+
+	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
+	AController* ActorController = OwningCharacter->GetController();
+
+	AAIController* AIOwningController = Cast<AAIController>(ActorController);
+
+	if (ActorController->IsLocalPlayerController())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
+		OwningCharacter->EnableInput(Cast<APlayerController>(ActorController));
+	}
+	else if (AIOwningController != nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
+	}
 }
 
 void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
@@ -204,14 +235,3 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 	
 	ProjectileInstance->ComponentOwningPawn = OwningActor;
 }
-
-bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float MarginForError)
-{
-	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
-	{
-		return true;
-	}
-	
-	return false;
-}
-

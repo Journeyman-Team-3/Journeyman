@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AttackSwingCapsule.h"
 #include "RangeProjectile.h"
+#include "AIController.h"
 #include "Components/ActorComponent.h"
 #include "Components/ArrowComponent.h"
 #include "AttackComponent.generated.h"
@@ -40,15 +41,13 @@ private:
 
 	void SwingAttack(TSubclassOf<AWeapon> Weapon);
 	void RangeAttack(TSubclassOf<AWeapon> Projectile);
-	bool IsBetween(float CurrentValue, float MaxValue, float MarginForError);
 
 	USkeletalMeshComponent* WeaponMesh;
+	AWeapon* CurrentWeapon = nullptr;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
-	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	UArrowComponent* ProjectileSpawnLocation;
