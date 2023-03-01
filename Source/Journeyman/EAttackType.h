@@ -10,5 +10,6 @@ UENUM(BlueprintType)
 enum class EAttackType : uint8 {
 	Null,
 	Melee,
-	Range
+	Range,
+	Spell
 };

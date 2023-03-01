@@ -65,11 +65,20 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 	case EAttackType::Range:
 		RangeAttack(AttackActor);
 		break;
+	case EAttackType::Spell:
+		SpellAttack(AttackActor);
+		break;
 	case EAttackType::Null:
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component weaponType on Actor of Class Type AWeapon: has not been set"));
 		break;
 	}
 }
+
+/*
+=========================================
+==================MELEE==================
+=========================================
+*/
 
 void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 {
@@ -205,6 +214,12 @@ void UAttackComponent::StopTriggerSword()
 	}
 }
 
+/*
+=========================================
+==================RANGE==================
+=========================================
+*/
+
 void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 {
 	if (Projectile == nullptr)
@@ -234,4 +249,15 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 	ARangeProjectile* ProjectileInstance = World->SpawnActor<ARangeProjectile>(Projectile, SpawnLocation, SpawnRotation, SpawnParams);
 	
 	ProjectileInstance->ComponentOwningPawn = OwningActor;
+}
+
+/*
+=========================================
+==================SPELL==================
+=========================================
+*/
+
+void UAttackComponent::SpellAttack(TSubclassOf<AWeapon> Spell) 
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Spell Attack - Call"));
 }

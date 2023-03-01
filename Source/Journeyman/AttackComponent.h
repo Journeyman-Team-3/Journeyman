@@ -41,6 +41,7 @@ private:
 
 	void SwingAttack(TSubclassOf<AWeapon> Weapon);
 	void RangeAttack(TSubclassOf<AWeapon> Projectile);
+	void SpellAttack(TSubclassOf<AWeapon> Spell);
 
 	USkeletalMeshComponent* WeaponMesh;
 	AWeapon* CurrentWeapon = nullptr;
