@@ -75,8 +75,17 @@ void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 	{
 		if (OtherActor != this)
 		{
-			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Projectile: Hit Actor = %s"), *OtherActor->GetName()));
-			OnHitActor(OtherActor);
+			// TODO: Check that its not nullptr
+			AEntity* HitActor = Cast<AEntity>(OtherActor);
+
+			if (HitActor == nullptr)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: RangeProjectile: HitActor is nullptr"));
+				return;
+			}
+			
+			DealDamage(Cast<AEntity>(OtherActor), baseDamage);
+			// OnHitActor(OtherActor);
 		}
 	}
 }
