@@ -7,7 +7,7 @@
 #include "Entity.generated.h"
 
 UCLASS()
-class JOURNEYMAN_API AEntity : public APawn
+class JOURNEYMAN_API AEntity : public ACharacter
 {
 	GENERATED_BODY()
 
