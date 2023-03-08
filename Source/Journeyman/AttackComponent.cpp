@@ -101,6 +101,8 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 		UAnimInstance* AnimInstance = OwningActorMeshComp->GetAnimInstance();
 
+		TriggerSword();
+
 		if (AnimInstance != nullptr)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
@@ -153,32 +155,31 @@ void UAttackComponent::SwordLineTrace()
 	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
 	
 	FHitResult HitResult;
-	bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera);
-
-	if (Hit)
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera))
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
-	}
-	
-	AActor* HitActor = nullptr;
-	HitActor = HitResult.GetActor();
-	
-	if (HitActor != GetOwner())
-	{
-		AEntity* HitActorDamage = Cast<AEntity>(HitActor);
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"))	
+		AActor* HitActor = nullptr;
+		HitActor = HitResult.GetActor();
 
-		if (HitActorDamage == nullptr)
+		if (HitActor != GetOwner())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
-			return;
+			AEntity* HitActorDamage = Cast<AEntity>(HitActor);
+
+			if (HitActorDamage == nullptr)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
+				return;
+			}
+
+			// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
+
+			// HitActorDamage->Destroy();
+
+			CurrentWeapon->OnHitActor(HitActorDamage);
 		}
-		
-		// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
-		
-		// HitActorDamage->Destroy();
-		
-		CurrentWeapon->OnHitActor(HitActorDamage);
 	}
+
+	StopTriggerSword();
 }
 
 void UAttackComponent::StopTriggerSword()

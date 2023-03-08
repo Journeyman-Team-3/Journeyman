@@ -8,7 +8,7 @@
 #include "AIController.h"
 #include "Components/ActorComponent.h"
 #include "Components/ArrowComponent.h"
-#include "AttackComponent.generated.h"
+//#include "AttackComponent.generated.h"
 
 
 
