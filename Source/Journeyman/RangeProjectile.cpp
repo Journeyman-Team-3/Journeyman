@@ -75,11 +75,16 @@ void ARangeProjectile::Tick(float DeltaTime)
 void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
 {
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap Detected"));
+	
 	if (OtherActor != GetOwner())
 	{
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap Detected - Not Owner"));
 		if (OtherActor != this)
 		{
-			// TODO: Check that its not nullptr
+			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap Detected - Not Self"));
+			
 			AEntity* HitActor = Cast<AEntity>(OtherActor);
 
 			if (HitActor == nullptr)
@@ -88,8 +93,8 @@ void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 				return;
 			}
 			
-			DealDamage(Cast<AEntity>(OtherActor), baseDamage);
-			// OnHitActor(OtherActor);
+			// DealDamage(Cast<AEntity>(OtherActor), baseDamage);
+			OnHitActor(HitActor);
 		}
 	}
 }

@@ -29,6 +29,8 @@ public:
 
 	void TriggerSword();
 	void StopTriggerSword();
+	
+	
 
 private:
 	AActor* OwningActor;
@@ -51,6 +53,5 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	UArrowComponent* ProjectileSpawnLocation;
-
 	
 };

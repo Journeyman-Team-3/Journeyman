@@ -165,7 +165,6 @@ void UAttackComponent::SwordLineTrace()
 	
 	if (HitActor != GetOwner())
 	{
-		// TODO: Check that its not nullptr
 		AEntity* HitActorDamage = Cast<AEntity>(HitActor);
 
 		if (HitActorDamage == nullptr)
@@ -176,8 +175,9 @@ void UAttackComponent::SwordLineTrace()
 		
 		// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
 		
-		HitActorDamage->Destroy();
-		// OnHitActor(OtherActor);
+		// HitActorDamage->Destroy();
+		
+		CurrentWeapon->OnHitActor(HitActorDamage);
 	}
 }
 

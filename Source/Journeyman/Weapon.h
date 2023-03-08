@@ -61,5 +61,8 @@ public:
 	// custom functions
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
 		void DealDamage(AEntity* _enty, int32 _dmg) { _enty->TakeDamage(_dmg); }
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnHitActor(AEntity* EntityHit);
 	
 };
