@@ -8,6 +8,8 @@ ARangeProjectile::ARangeProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	InitialLifeSpan = 10.f;
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Scene Component"));
 
@@ -41,6 +43,8 @@ ARangeProjectile::ARangeProjectile()
 void ARangeProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetLifeSpan(10.f);
 
 	if (!ProjectileMovementComponent)
 	{
