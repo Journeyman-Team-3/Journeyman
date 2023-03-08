@@ -17,11 +17,11 @@ public:
 
 	// si senior
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Properties")
-		int32 health;
+		int32 health = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-		int32 stamina;
+		int32 stamina = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-		int32 speed;
+		int32 speed = 1;
 
 protected:
 	// Called when the game starts or when spawned
