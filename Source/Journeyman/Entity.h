@@ -35,8 +35,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// si seniorita
-	UFUNCTION(BlueprintCallable, Category="Custom Functions")
-		void TakeDamage(int32 _dmg) { health -= _dmg; }
+	UFUNCTION(BlueprintCallable, Category = "Custom Functions")
+		void TakeDamage(int32 _dmg);
 
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
 		void Heal(int32 _heal) { health += _heal; }

@@ -32,3 +32,13 @@ void AEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AEntity::TakeDamage(int32 _dmg)
+{
+	health -= _dmg;
+
+	if (health <= 0)
+	{
+		GetWorld()->DestroyActor(this);
+	}
+}
+
