@@ -4,7 +4,6 @@
 #include "AttackComponent.h"
 
 #include "AttackSwingCapsule.h"
-#include "DrawDebugHelpers.h"
 #include "RangeProjectile.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -39,7 +38,9 @@ void UAttackComponent::BeginPlay()
 		ProjectileSpawnLocation->SetHiddenInGame(false);
 		ProjectileSpawnLocation->SetVisibility(true);
 	}
+	
 }
+
 
 // Called every frame
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -54,16 +55,24 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor is nullptr"));
 		return;
 	}
-
-	CurrentWeapon = AttackActor.GetDefaultObject();
 	
 	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
 	case EAttackType::Melee:
-		SwingAttack(AttackActor);
+		if (Cast<AAttackSwingCapsule>(AttackActor->GetDefaultObject()) != nullptr)
+		{
+			SwingAttack(AttackActor);
+			break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Melee"));
 		break;
 	case EAttackType::Range:
-		RangeAttack(AttackActor);
+		if (Cast<ARangeProjectile>(AttackActor.GetDefaultObject()) != nullptr)
+		{
+			RangeAttack(AttackActor);
+			break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor Does Not Match An Attack Type - Range"));
 		break;
 	case EAttackType::Null:
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component weaponType on Actor of Class Type AWeapon: has not been set"));
@@ -83,17 +92,18 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 	USkeletalMeshComponent* OwningActorMeshComp = Cast<USkeletalMeshComponent>(OwningActor->FindComponentByClass(USkeletalMeshComponent::StaticClass()));
 
-	WeaponMesh = NewObject<USkeletalMeshComponent>(OwningActor, USkeletalMeshComponent::StaticClass(), TEXT("Weapon Mesh"));
+	USkeletalMeshComponent* WeaponMesh = NewObject<USkeletalMeshComponent>(OwningActor, USkeletalMeshComponent::StaticClass(), TEXT("Weapon Mesh"));
 
 	if (WeaponMesh)
 	{
-		// WeaponMesh->SetVisibility(true);
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
-		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
 		WeaponMesh->RegisterComponent();
+		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
 		
 		OwningActor->AddInstanceComponent(WeaponMesh);
 	}
+	
+	bool bAttackOnce = true;
 
 	if (bAttackOnce)
 	{
@@ -104,108 +114,69 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 		if (AnimInstance != nullptr)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
-			float animTime = AnimInstance->Montage_Play(Weapon.GetDefaultObject()->AttackAnimation);
+			float animTime = AnimInstance->Montage_Play(AttackAnimation);
 
 			FTimerHandle DelayTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
 				// Resets so that the player can attack again
-				// WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-				WeaponMesh->SkeletalMesh = nullptr;
 				bAttackOnce = true;
 			}, animTime, false);
 		}
 	}
-}
+	// TODO: Get Socket Locations
+	FVector StartLocation;
+	FVector EndLocation;
 
-void UAttackComponent::TriggerSword()
-{
-	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
-	AController* ActorController = OwningCharacter->GetController();
-
-	AAIController* AIOwningController = Cast<AAIController>(ActorController);
-
-	if (ActorController->IsLocalPlayerController())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
-		OwningCharacter->DisableInput(Cast<APlayerController>(ActorController));
-	}
-	else if (AIOwningController != nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
-	}
-
-	UMovementComponent* Movement = Cast<UMovementComponent>(OwningActor->GetComponentByClass(UMovementComponent::StaticClass()));
-	Movement->StopMovementImmediately();
-	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.0001, true);
-}
-
-void UAttackComponent::SwordLineTrace()
-{
-	FVector StartLocation = WeaponMesh->GetSocketLocation(TEXT("start"));
-	FVector EndLocation = WeaponMesh->GetSocketLocation(TEXT("end"));
-
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
-	
 	FHitResult HitResult;
-	bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera);
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic);
 
-	if (Hit)
+
+
+
+
+	/*
+	// Checks if it is not null, if it is then return
+	if (OwningActor == nullptr)
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
+		return;
 	}
 	
-	AActor* HitActor = nullptr;
-	HitActor = HitResult.GetActor();
+	// Add SwingCollision to the centre point on the owner
+	// TODO: Spawn Actor
+
+	if (SwingCollision != nullptr)
+	{
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Destroyed Swing Due To Swing Existing")));
+		SwingCollision->Destroy();
+	}
 	
-	if (HitActor != GetOwner())
-	{
-		AEntity* HitActorDamage = Cast<AEntity>(HitActor);
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const FVector SpawnLocation = OwningActor->GetActorLocation();
+	const FRotator SpawnRotation = OwningActor->GetActorRotation();
+	SwingCollision = Cast<AAttackSwingCapsule>(GetWorld()->SpawnActor(SwingCollisionClass, &SpawnLocation, &SpawnRotation, SpawnInfo));
 
-		if (HitActorDamage == nullptr)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
-			return;
-		}
-		
-		// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
-		
-		// HitActorDamage->Destroy();
-		
-		CurrentWeapon->OnHitActor(HitActorDamage);
+	if (SwingCollision == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: SwingCollision = nullptr - has it been set on the owning actor?"));
+		return;
 	}
+
+	SwingCollision->ComponentOwningPawn = OwningActor;
+	
+	SwingCollision->AttachToActor(OwningActor, FAttachmentTransformRules::KeepWorldTransform);
+
+	SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
+	SwingCollision->CurrentRotation = SwingCollision->StartRotation;
+	SwingCollision->MaxRotation = FindMaxRotation(SwingCollision->StartRotation);
+
+	bIsSwinging = true;
+	*/
 }
 
-void UAttackComponent::StopTriggerSword()
-{
-	GetWorld()->GetTimerManager().ClearTimer(SwordSwingTimerHandle);
-
-	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
-	AController* ActorController = OwningCharacter->GetController();
-
-	AAIController* AIOwningController = Cast<AAIController>(ActorController);
-
-	if (ActorController->IsLocalPlayerController())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
-		OwningCharacter->EnableInput(Cast<APlayerController>(ActorController));
-	}
-	else if (AIOwningController != nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
-	}
-}
-
-void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
+void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
 {
 	if (Projectile == nullptr)
 	{
@@ -213,7 +184,7 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 		return;
 	}
 
-	ProjectileSpawnLocation->SetRelativeLocation(Projectile.GetDefaultObject()->SpawnOffset);
+	ProjectileSpawnLocation->SetRelativeLocation(SpawnOffset);
 	
 	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
 
@@ -235,3 +206,44 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 	
 	ProjectileInstance->ComponentOwningPawn = OwningActor;
 }
+
+float UAttackComponent::FindMaxRotation(float StartRotation)
+{
+	if (StartRotation >= 0 && StartRotation <= 180.f)
+	{
+		float TempNum = StartRotation + 180.f;
+		if (TempNum > 180.f)
+		{
+			return StartRotation - 180;
+		}
+		else
+		{
+			return StartRotation - 180;
+		}
+	}
+	else
+	{
+		float TempNum = StartRotation + 180;
+		if (TempNum < 0)
+		{
+			return StartRotation + 180;
+		}
+		else
+		{
+			return StartRotation + 180;
+		}
+	}
+	
+	
+}
+
+bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float MarginForError)
+{
+	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
+	{
+		return true;
+	}
+	
+	return false;
+}
+

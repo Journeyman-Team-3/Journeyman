@@ -36,6 +36,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	UFUNCTION(BlueprintImplementableEvent, meta=(DeprecatedFunction, DeprecationMessage="Function Currently Not In Use - Any Nodes Added Here Will Not Be Called"))
+	void OnHitActor(AActor* HitActor);
 
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
