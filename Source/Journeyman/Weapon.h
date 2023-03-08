@@ -23,8 +23,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		EAttackType weaponType = EAttackType::Null;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+	// Mesh held in the OwningActors hand
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditConditionHides="weaponType == EAttackType::Null"))
 		USkeletalMesh* weaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Range"))
+		FVector SpawnOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Melee"))
+		UAnimMontage* AttackAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		int32 baseDamage = 1; // may want to put this on projectiles, made with scythe in mind
@@ -36,7 +43,7 @@ public:
 		float timeBetweenAttacks = .3f; 
 
 	UPROPERTY(BlueprintReadWrite, Category = "Custom Properties")
-		float gameTimeAtLastAttack; // store game time when attack is called 
+		float gameTimeAtLastAttack; // store game time when attack is called
 
 	// --How I am imagining the BP_Scythe implementation--
 	// attacking event trigger-> if (ammo > 0): Attack(), ammo -= 1;
@@ -46,6 +53,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -53,4 +61,5 @@ public:
 	// custom functions
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
 		void DealDamage(AEntity* _enty, int32 _dmg) { _enty->TakeDamage(_dmg); }
+	
 };
