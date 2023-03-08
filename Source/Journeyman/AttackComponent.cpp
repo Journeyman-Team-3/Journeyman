@@ -257,6 +257,31 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 =========================================
 */
 
+TArray<ASpell*> UAttackComponent::GetAllSpells()
+{
+	return CurrentSpells;
+}
+
+ASpell* UAttackComponent::GetSpellOfType(ASpell* Spell, TArray<ASpell*> Spells)
+{
+	for (ASpell* CurrentSpell : Spells)
+	{
+		if (Spell == CurrentSpell)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Attack Component: GetAllSpells: Spell Found"));
+			return CurrentSpell;
+		}
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Attack Component: GetAllSpells: Spell Not Found"));
+	return nullptr;
+}
+
+void UAttackComponent::AddSpell(ASpell* Spell, TArray<ASpell*> Spells)
+{
+	
+}
+
 void UAttackComponent::SpellAttack(TSubclassOf<AWeapon> Spell) 
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Spell Attack - Call"));

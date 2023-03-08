@@ -6,6 +6,7 @@
 #include "AttackSwingCapsule.h"
 #include "RangeProjectile.h"
 #include "AIController.h"
+#include "Spell.h"
 #include "Components/ActorComponent.h"
 #include "Components/ArrowComponent.h"
 #include "AttackComponent.generated.h"
@@ -30,6 +31,17 @@ public:
 	void TriggerSword();
 	void StopTriggerSword();
 
+	UFUNCTION(BlueprintCallable)
+	TArray<ASpell*> GetAllSpells();
+
+	// Returns the first spell of that type in array.
+	UFUNCTION(BlueprintCallable)
+	ASpell* GetSpellOfType(ASpell* Spell, TArray<ASpell*> Spells);
+
+	// Adds a spell to the provided array
+	UFUNCTION(BlueprintCallable)
+	void AddSpell(ASpell* Spell, TArray<ASpell*> Spells);
+
 private:
 	AActor* OwningActor;
 	
@@ -46,11 +58,14 @@ private:
 	USkeletalMeshComponent* WeaponMesh;
 	AWeapon* CurrentWeapon = nullptr;
 
+	UPROPERTY(VisibleAnywhere)
+	TArray<ASpell*> CurrentSpells;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
+	UPROPERTY()
 	UArrowComponent* ProjectileSpawnLocation;
 
 	
