@@ -4,7 +4,10 @@
 #include "AttackComponent.h"
 
 #include "AttackSwingCapsule.h"
+<<<<<<< HEAD
 #include "DrawDebugHelpers.h"
+=======
+>>>>>>> main
 #include "RangeProjectile.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -25,6 +28,25 @@ void UAttackComponent::BeginPlay()
 
 	// Makes sure we have a reference to the actor the the component is attached too
 	OwningActor = GetOwner();
+<<<<<<< HEAD
+=======
+
+	ProjectileSpawnLocation = NewObject<UArrowComponent>(OwningActor, UArrowComponent::StaticClass(), TEXT("Projectile Spawn Location"));
+
+	if (ProjectileSpawnLocation)
+	{
+		ProjectileSpawnLocation->RegisterComponent();
+
+		ProjectileSpawnLocation->AttachToComponent(OwningActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
+		ProjectileSpawnLocation->CreationMethod = EComponentCreationMethod::Instance;
+
+		ProjectileSpawnLocation->SetHiddenInGame(false);
+		ProjectileSpawnLocation->SetVisibility(true);
+	}
+	
+}
+>>>>>>> main
 
 	ProjectileSpawnLocation = NewObject<UArrowComponent>(OwningActor, UArrowComponent::StaticClass(), TEXT("Projectile Spawn Location"));
 
@@ -54,8 +76,11 @@ void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: AttackActor is nullptr"));
 		return;
 	}
+<<<<<<< HEAD
 
 	// AttackActor.GetDefaultObject()->OwningActor = OwningActor;
+=======
+>>>>>>> main
 	
 	switch (AttackActor.GetDefaultObject()->weaponType)
 	{
@@ -93,9 +118,64 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 	USkeletalMeshComponent* OwningActorMeshComp = Cast<USkeletalMeshComponent>(OwningActor->FindComponentByClass(USkeletalMeshComponent::StaticClass()));
 
+<<<<<<< HEAD
 	WeaponMesh = NewObject<USkeletalMeshComponent>(OwningActor, USkeletalMeshComponent::StaticClass(), TEXT("Weapon Mesh"));
 
 	if (WeaponMesh)
+=======
+	USkeletalMeshComponent* WeaponMesh = NewObject<USkeletalMeshComponent>(OwningActor, USkeletalMeshComponent::StaticClass(), TEXT("Weapon Mesh"));
+
+	if (WeaponMesh)
+	{
+		// WeaponMesh->SetVisibility(true);
+		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
+		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
+		WeaponMesh->RegisterComponent();
+		
+		OwningActor->AddInstanceComponent(WeaponMesh);
+	}
+	
+	bool bAttackOnce = true;
+
+	if (bAttackOnce)
+	{
+		bAttackOnce = false;
+
+		UAnimInstance* AnimInstance = OwningActorMeshComp->GetAnimInstance();
+
+		if (AnimInstance != nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
+			float animTime = AnimInstance->Montage_Play(AttackAnimation);
+
+			FTimerHandle DelayTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+				// Resets so that the player can attack again
+				// WeaponMesh->SetVisibility(false);
+				bAttackOnce = true;
+			}, animTime, false);
+		}
+	}
+	/*
+	// TODO: Get Socket Locations
+	FVector StartLocation;
+	FVector EndLocation;
+
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic);
+
+	*/
+
+
+
+
+
+	/*
+	// Checks if it is not null, if it is then return
+	if (OwningActor == nullptr)
+>>>>>>> main
 	{
 		// WeaponMesh->SetVisibility(true);
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
@@ -186,6 +266,29 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 	
 	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
 
+<<<<<<< HEAD
+=======
+	SwingCollision->StartRotation = SwingCollision->GetActorRotation().Yaw;
+	SwingCollision->CurrentRotation = SwingCollision->StartRotation;
+	SwingCollision->MaxRotation = FindMaxRotation(SwingCollision->StartRotation);
+
+	bIsSwinging = true;
+	*/
+}
+
+void UAttackComponent::RangeAttack(TSubclassOf<AActor> Projectile)
+{
+	if (Projectile == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: Attack Component: Projectile = nullptr"));
+		return;
+	}
+
+	ProjectileSpawnLocation->SetRelativeLocation(SpawnOffset);
+	
+	FVector SpawnLocation = ProjectileSpawnLocation->GetComponentTransform().GetLocation();
+
+>>>>>>> main
 	FRotator SpawnRotation = OwningActor->GetActorForwardVector().Rotation();
 
 	UWorld* World = GetWorld();
@@ -209,6 +312,39 @@ bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float Margi
 {
 	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
 	{
+<<<<<<< HEAD
+=======
+		float TempNum = StartRotation + 180.f;
+		if (TempNum > 180.f)
+		{
+			return StartRotation - 180;
+		}
+		else
+		{
+			return StartRotation - 180;
+		}
+	}
+	else
+	{
+		float TempNum = StartRotation + 180;
+		if (TempNum < 0)
+		{
+			return StartRotation + 180;
+		}
+		else
+		{
+			return StartRotation + 180;
+		}
+	}
+	
+	
+}
+
+bool UAttackComponent::IsBetween(float CurrentValue, float MaxValue, float MarginForError)
+{
+	if (CurrentValue >= MaxValue - MarginForError && CurrentValue <= MaxValue + MarginForError)
+	{
+>>>>>>> main
 		return true;
 	}
 	

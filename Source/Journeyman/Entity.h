@@ -3,12 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+<<<<<<< HEAD
 #include "GameFramework/Character.h"
+=======
+>>>>>>> main
 #include "GameFramework/Pawn.h"
 #include "Entity.generated.h"
 
 UCLASS()
+<<<<<<< HEAD
 class JOURNEYMAN_API AEntity : public ACharacter
+=======
+class JOURNEYMAN_API AEntity : public APawn
+>>>>>>> main
 {
 	GENERATED_BODY()
 
