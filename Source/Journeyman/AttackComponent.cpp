@@ -121,6 +121,8 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 void UAttackComponent::TriggerSword()
 {
+	/*
+	 
 	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
 	AController* ActorController = OwningCharacter->GetController();
 
@@ -129,7 +131,7 @@ void UAttackComponent::TriggerSword()
 	if (ActorController->IsLocalPlayerController())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
-		OwningCharacter->DisableInput(Cast<APlayerController>(ActorController));
+		// OwningCharacter->DisableInput(Cast<APlayerController>(ActorController));
 	}
 	else if (AIOwningController != nullptr)
 	{
@@ -139,9 +141,8 @@ void UAttackComponent::TriggerSword()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
 	}
-
-	UMovementComponent* Movement = Cast<UMovementComponent>(OwningActor->GetComponentByClass(UMovementComponent::StaticClass()));
-	Movement->StopMovementImmediately();
+	*/
+	
 	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.0001, true);
 }
 

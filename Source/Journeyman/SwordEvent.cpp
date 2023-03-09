@@ -12,7 +12,12 @@ void USwordEvent::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 
 	// Cast<UAttackComponent>(Cast<AWeapon>(MeshComp->GetOwner())->OwningActor->GetComponentByClass(UAttackComponent::StaticClass()))->TriggerSword();
 
-	Cast<UAttackComponent>(MeshComp->GetOwner()->GetComponentByClass(UAttackComponent::StaticClass()))->TriggerSword();
+	UAttackComponent* Temp = Cast<UAttackComponent>(MeshComp->GetOwner()->GetComponentByClass(UAttackComponent::StaticClass()));
+
+	if (Temp != nullptr)
+	{
+		Temp->TriggerSword();
+	}
 }
 
 void USwordEvent::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
@@ -21,5 +26,10 @@ void USwordEvent::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 
 	// Cast<UAttackComponent>(Cast<AWeapon>(MeshComp->GetOwner())->OwningActor->GetComponentByClass(UAttackComponent::StaticClass()))->StopTriggerSword();
 
-	Cast<UAttackComponent>(MeshComp->GetOwner()->GetComponentByClass(UAttackComponent::StaticClass()))->StopTriggerSword();
+	UAttackComponent* Temp = Cast<UAttackComponent>(MeshComp->GetOwner()->GetComponentByClass(UAttackComponent::StaticClass()));
+
+	if (Temp != nullptr)
+	{
+		Temp->StopTriggerSword();
+	}
 }

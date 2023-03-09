@@ -18,7 +18,7 @@ public:
 	// si senior
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Properties")
 		int32 health = 10;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Custom Properties")
 		int32 stamina = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
 		int32 speed = 1;
