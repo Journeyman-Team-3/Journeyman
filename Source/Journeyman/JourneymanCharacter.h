@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Damageable.h"
 #include "JourneymanCharacter.generated.h"
+
 
 UCLASS(config=Game)
 class AJourneymanCharacter : public ACharacter
@@ -28,6 +30,7 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
 
 protected:
 
