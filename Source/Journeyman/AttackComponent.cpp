@@ -170,7 +170,8 @@ void UAttackComponent::SwordLineTrace()
 
 		if (HitActorDamage == nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
+			// Noah - commented out for now bc the amount of prints cause frames to drop
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
 			return;
 		}
 		
