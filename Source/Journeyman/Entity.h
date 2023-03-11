@@ -4,42 +4,95 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "Entity.generated.h"
 
-UCLASS()
-class JOURNEYMAN_API AEntity : public APawn
+UCLASS(config = Game)
+class JOURNEYMAN_API AEntity : public ACharacter
 {
 	GENERATED_BODY()
+
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
 
 public:
 	// Sets default values for this pawn's properties
 	AEntity();
 
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseLookUpRate;
+
 	// si senior
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Properties")
-		int32 health;
+	int32 health = 10;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Custom Properties")
+	int32 stamina = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-		int32 stamina;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-		int32 speed;
+	int32 speed = 1;
+
+	UPROPERTY(EditAnywhere)
+	float AttackCooldownTime = 0.5f;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	/** Resets HMD orientation in VR. */
+	void OnResetVR();
+
+	/** Called for forwards/backward input */
+	void MoveForward(float Value);
+
+	/** Called for side to side input */
+	void MoveRight(float Value);
+
+	/**
+	 * Called via input to turn at a given rate.
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	 */
+	void TurnAtRate(float Rate);
+
+	/**
+	 * Called via input to turn look up/down at a given rate.
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	 */
+	void LookUpAtRate(float Rate);
+
+	/** Handler for when a touch input begins. */
+	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
+
+	/** Handler for when a touch input stops. */
+	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+
+
+protected:
+	// APawn interface
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// End of APawn interface
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	// si seniorita
-	UFUNCTION(BlueprintCallable, Category="Custom Functions")
-		void TakeDamage(int32 _dmg) { health -= _dmg; }
+	UFUNCTION(BlueprintCallable, Category = "Custom Functions")
+		void TakeDamage(int32 _dmg);
 
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
 		void Heal(int32 _heal) { health += _heal; }
 
 
+private:
+	bool CanBeHit = true;
+
+	FTimerHandle TakeDamageCooldown;
 };
