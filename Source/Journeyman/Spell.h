@@ -13,5 +13,12 @@ UCLASS()
 class JOURNEYMAN_API ASpell : public ARangeProjectile
 {
 	GENERATED_BODY()
+
+public:
+
+protected:
+
+private:
+
 	
 };

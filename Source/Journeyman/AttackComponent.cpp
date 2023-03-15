@@ -257,11 +257,17 @@ void UAttackComponent::RangeAttack(TSubclassOf<AWeapon> Projectile)
 =========================================
 */
 
+/*
+	Returns all spells
+*/
 TArray<ASpell*> UAttackComponent::GetAllSpells()
 {
 	return CurrentSpells;
 }
 
+/*
+	Finds the first spell of given type in the given array
+*/
 ASpell* UAttackComponent::GetSpellOfType(ASpell* Spell, TArray<ASpell*> Spells)
 {
 	for (ASpell* CurrentSpell : Spells)
@@ -277,11 +283,17 @@ ASpell* UAttackComponent::GetSpellOfType(ASpell* Spell, TArray<ASpell*> Spells)
 	return nullptr;
 }
 
+/*
+	 Adds a spell to the array
+*/
 void UAttackComponent::AddSpell(ASpell* Spell, TArray<ASpell*> Spells)
 {
-	
+	Spells.Add(Spell);
 }
 
+/*
+	Triggers a spell attack
+*/
 void UAttackComponent::SpellAttack(TSubclassOf<AWeapon> Spell) 
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Spell Attack - Call"));
