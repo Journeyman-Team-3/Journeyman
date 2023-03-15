@@ -33,6 +33,8 @@ public:
 	float BaseLookUpRate;
 
 	// si senior
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+		int32 max_health = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Properties")
 	int32 health = 10;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Custom Properties")
@@ -84,7 +86,18 @@ public:
 		void TakeDamage(int32 _dmg);
 
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
-		void Heal(int32 _heal) { health += _heal; }
-
-
+		void Heal(int32 _heal) 
+	{ 
+		if (health < max_health)
+		{
+			if (health + _heal > max_health) 
+			{
+				health = max_health;
+			}
+			else
+			{
+				health += _heal;
+			}
+		}
+	}
 };
