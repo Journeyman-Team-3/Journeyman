@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
 	int32 speed = 1;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Properties")
 	float AttackCooldownTime = 0.5f;
 
 protected:
