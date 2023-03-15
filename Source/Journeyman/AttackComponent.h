@@ -25,12 +25,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(TSubclassOf<AWeapon> AttackActor);
+	void Attack(TSubclassOf<AWeapon> AttackActor, FString DamageType);
 
 	void TriggerSword();
 	void StopTriggerSword();
-	
-	
 
 private:
 	AActor* OwningActor;

@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "RangeProjectile.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -47,7 +48,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor) 
+void UAttackComponent::Attack(TSubclassOf<AWeapon> AttackActor, FString DamageType) 
 {
 	if (AttackActor == nullptr)
 	{
@@ -87,7 +88,6 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 	if (WeaponMesh)
 	{
-		// WeaponMesh->SetVisibility(true);
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
 		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
 		WeaponMesh->RegisterComponent();
@@ -110,8 +110,8 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+
 				// Resets so that the player can attack again
-				// WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 				WeaponMesh->SkeletalMesh = nullptr;
 				bAttackOnce = true;
 			}, animTime, false);
@@ -121,8 +121,6 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 void UAttackComponent::TriggerSword()
 {
-	/*
-	 
 	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
 	AController* ActorController = OwningCharacter->GetController();
 
@@ -131,7 +129,10 @@ void UAttackComponent::TriggerSword()
 	if (ActorController->IsLocalPlayerController())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
-		// OwningCharacter->DisableInput(Cast<APlayerController>(ActorController));
+		
+		auto MovementComponent = OwningCharacter->GetCharacterMovement();
+
+		MovementComponent->MaxWalkSpeed = 300;
 	}
 	else if (AIOwningController != nullptr)
 	{
@@ -141,7 +142,6 @@ void UAttackComponent::TriggerSword()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
 	}
-	*/
 	
 	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.0001, true);
 }
@@ -156,6 +156,9 @@ void UAttackComponent::SwordLineTrace()
 	FHitResult HitResult;
 	bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera);
 
+	/*
+		Can be used to debug
+	*/
 	if (Hit)
 	{
 		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
@@ -173,10 +176,6 @@ void UAttackComponent::SwordLineTrace()
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
 			return;
 		}
-		
-		// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
-		
-		// HitActorDamage->Destroy();
 		
 		CurrentWeapon->OnHitActor(HitActorDamage);
 	}
