@@ -13,6 +13,11 @@
 // Sets default values
 AEntity::AEntity()
 {
+	// Set health, stam and mana
+	health = max_health;
+	stamina = max_stamina;
+	mana = max_mana;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
