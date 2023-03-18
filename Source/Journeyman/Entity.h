@@ -12,14 +12,6 @@ class JOURNEYMAN_API AEntity : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
-
 public:
 	// Sets default values for this pawn's properties
 	AEntity();
@@ -33,10 +25,20 @@ public:
 	float BaseLookUpRate;
 
 	// si senior
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Properties")
-	int32 health = 10;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Custom Properties")
-	int32 stamina = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+		int32 max_health = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+		int32 max_stamina = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+		int32 max_mana = 100;
+
+	UPROPERTY(BlueprintReadOnly, Category="Custom Properties")
+	int32 health;
+	UPROPERTY(BlueprintReadWrite, Category="Custom Properties")
+	int32 stamina;
+	UPROPERTY(BlueprintReadWrite, Category = "Custom Properties")
+	int32 mana;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
 	int32 speed = 1;
 
@@ -74,17 +76,36 @@ protected:
 	// End of APawn interface
 
 public:	
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	// si seniorita
-	UFUNCTION(BlueprintCallable, Category = "Custom Functions")
-		void TakeDamage(int32 _dmg);
+	UFUNCTION(BlueprintCallable, Category = "Custom Functions", meta = (ToolTip = "Damages entity by x, returns false if Entity health is now below 0"))
+		bool TakeDamage(int32 _dmg)
+	{
+		bool isStillAlive = true;
+		health -= _dmg;
 
-	UFUNCTION(BlueprintCallable, Category="Custom Functions")
-		void Heal(int32 _heal) { health += _heal; }
+		if (health <= 0)
+		{
+			isStillAlive = false;
+			return isStillAlive;
+		}
+		else
+			return isStillAlive;
+	};
+
+	UFUNCTION(BlueprintCallable, Category="Custom Functions", meta=(ToolTip = "Heals entity by x, never goes above entity max_health"))
+		void Heal(int32 _heal) 
+	{ 
+		if (health < max_health)
+		{
+			if (health + _heal > max_health)
+			{
+				health = max_health;
+			}
+			else
+				health += _heal;
+		}
+	}
 
 
 };
