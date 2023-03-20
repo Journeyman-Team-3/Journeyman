@@ -158,8 +158,6 @@ void UAttackComponent::SwordLineTrace()
 	FHitResult HitResult;
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
-
 		AActor* HitActor = HitResult.GetActor();
 
 		if (HitActor != GetOwner())
@@ -173,13 +171,14 @@ void UAttackComponent::SwordLineTrace()
 			}
 			else
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Entity Hit"));
 				if (!EntityHit->isPenetrated)
 				{
+					// Used to make sure OnHitActor is only called once
 					CurrentWeapon->OnHitActor(EntityHit);
 					EntityHit->isPenetrated = true;
-				}
-					
+					// Starts timer for 1 second // after a second the bool will be switched back to false
+					GetWorld()->GetTimerManager().SetTimer(EntityHit->TH_ResetEntityBool, EntityHit, &AEntity::ResetEntityBool, 1.0f, false);
+				}			
 			}	
 		}
 	}

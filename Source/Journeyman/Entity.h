@@ -42,8 +42,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
 	int32 speed = 1;
 
+	// Stores hit state / used to stop being hit multiple times per attack
 	bool isPenetrated = false;
-	int32 penetrationCounter = 0;
+
+	// switches 'isPenetrated' back to false after being switched to true in AttackComponent::SwordLineTrace
+	void ResetEntityBool() { isPenetrated = false; };
+	FTimerHandle TH_ResetEntityBool;
+private:
+	
 
 protected:
 	/** Resets HMD orientation in VR. */
@@ -73,7 +79,6 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
