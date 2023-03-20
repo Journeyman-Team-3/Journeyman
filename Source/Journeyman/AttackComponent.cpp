@@ -102,13 +102,13 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 		if (AnimInstance != nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
 			float animTime = AnimInstance->Montage_Play(Weapon.GetDefaultObject()->AttackAnimation);
 
 			FTimerHandle DelayTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
 
 				// Resets so that the player can attack again
 				
@@ -153,35 +153,30 @@ void UAttackComponent::SwordLineTrace()
 	FVector StartLocation = WeaponMesh->GetSocketLocation(TEXT("start"));
 	FVector EndLocation = WeaponMesh->GetSocketLocation(TEXT("end"));
 
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
+	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
 	
 	FHitResult HitResult;
-	bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera);
-
-	if (Hit)
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera))
 	{
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
-	}
-	
-	AActor* HitActor = nullptr;
-	HitActor = HitResult.GetActor();
-	
-	if (HitActor != GetOwner())
-	{
-		AEntity* HitActorDamage = Cast<AEntity>(HitActor);
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hit Something"));
 
-		if (HitActorDamage == nullptr)
+		AActor* HitActor = HitResult.GetActor();
+
+		if (HitActor != GetOwner())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
-			return;
+			AEntity* EntityHit = Cast<AEntity>(HitActor);
+
+			if (EntityHit == nullptr)
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
+				return;
+			}
+
+			CurrentWeapon->OnHitActor(EntityHit);
 		}
-		
-		// HitActorDamage->TakeDamage(CurrentWeapon->baseDamage);
-		
-		// HitActorDamage->Destroy();
-		
-		CurrentWeapon->OnHitActor(HitActorDamage);
 	}
+	
+	
 }
 
 void UAttackComponent::StopTriggerSword()
@@ -195,16 +190,16 @@ void UAttackComponent::StopTriggerSword()
 
 	if (ActorController->IsLocalPlayerController())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
 		OwningCharacter->EnableInput(Cast<APlayerController>(ActorController));
 	}
 	else if (AIOwningController != nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
 	}
 }
 
