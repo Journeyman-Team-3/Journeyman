@@ -26,11 +26,11 @@ public:
 
 	// si senior
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
-		int32 max_health;
+		int32 max_health = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
-		int32 max_stamina ;
+		int32 max_stamina = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
-		int32 max_mana;
+		int32 max_mana = 100;
 
 	UPROPERTY(BlueprintReadOnly, Category="Custom Properties")
 	float health;
