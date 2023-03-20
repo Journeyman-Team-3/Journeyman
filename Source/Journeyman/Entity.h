@@ -85,7 +85,7 @@ protected:
 
 public:	
 	UFUNCTION(BlueprintCallable, Category = "Custom Functions", meta = (ToolTip = "Needed to start"))
-		void SetValues()
+		void Constructor()
 	{
 		// Set health, stam and mana
 		health = max_health;
