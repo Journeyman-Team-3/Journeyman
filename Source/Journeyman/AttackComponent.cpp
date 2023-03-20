@@ -87,7 +87,6 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 	if (WeaponMesh)
 	{
-		// WeaponMesh->SetVisibility(true);
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
 		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
 		WeaponMesh->RegisterComponent();
@@ -110,8 +109,11 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+
 				// Resets so that the player can attack again
-				// WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+				
+				// TODO: Remove Mesh from hand?
+
 				WeaponMesh->SkeletalMesh = nullptr;
 				bAttackOnce = true;
 			}, animTime, false);
@@ -170,8 +172,7 @@ void UAttackComponent::SwordLineTrace()
 
 		if (HitActorDamage == nullptr)
 		{
-			// Noah - commented out for now bc the amount of prints cause frames to drop
-			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
 			return;
 		}
 		
