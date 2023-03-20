@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
 	int32 speed = 1;
 
+	bool isPenetrated = false;
+	int32 penetrationCounter = 0;
+
 protected:
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();

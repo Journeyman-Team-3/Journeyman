@@ -171,12 +171,18 @@ void UAttackComponent::SwordLineTrace()
 				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
 				return;
 			}
-
-			CurrentWeapon->OnHitActor(EntityHit);
+			else
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Entity Hit"));
+				if (!EntityHit->isPenetrated)
+				{
+					CurrentWeapon->OnHitActor(EntityHit);
+					EntityHit->isPenetrated = true;
+				}
+					
+			}	
 		}
 	}
-	
-	
 }
 
 void UAttackComponent::StopTriggerSword()
