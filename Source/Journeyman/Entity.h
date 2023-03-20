@@ -33,11 +33,11 @@ public:
 		int32 max_mana = 100;
 
 	UPROPERTY(BlueprintReadOnly, Category="Custom Properties")
-	int32 health;
+	float health;
 	UPROPERTY(BlueprintReadWrite, Category="Custom Properties")
-	int32 stamina;
+	float stamina;
 	UPROPERTY(BlueprintReadWrite, Category = "Custom Properties")
-	int32 mana;
+	float mana;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
 	int32 speed = 1;
