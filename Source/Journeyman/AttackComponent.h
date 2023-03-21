@@ -38,7 +38,6 @@ private:
 	bool bAttackOnce = true;
 
 	void SwordLineTrace();
-
 	FTimerHandle SwordSwingTimerHandle;
 
 	void SwingAttack(TSubclassOf<AWeapon> Weapon);
