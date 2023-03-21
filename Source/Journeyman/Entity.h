@@ -40,7 +40,7 @@ public:
 	float mana;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-	int32 speed = 1;
+	float speed = 1.0f;
 
 	// Stores hit state / used to stop being hit multiple times per attack
 	bool isPenetrated = false;
