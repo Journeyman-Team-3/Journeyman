@@ -30,15 +30,13 @@ public:
 	void TriggerSword();
 	void StopTriggerSword();
 	
-	
-
 private:
 	AActor* OwningActor;
 	
 	bool bAttackOnce = true;
 
 	void SwordLineTrace();
-	FTimerHandle SwordSwingTimerHandle;
+	FTimerHandle TH_SwordSwing;
 
 	void SwingAttack(TSubclassOf<AWeapon> Weapon);
 	void RangeAttack(TSubclassOf<AWeapon> Projectile);
@@ -52,5 +50,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	UArrowComponent* ProjectileSpawnLocation;
-	
 };
