@@ -33,13 +33,21 @@ void APotion::DrinkPotion(APotion* PotionToDrink)
 
 		break;
 	case EPotionStyle::SingleUse:
-
+		SingleUsePotion(PotionToDrink);
 		break;
 	case EPotionStyle::Timed:
-
+		TimedPotion(PotionToDrink);
 		break;
 	default:
 		break;
 	}
+}
+
+void APotion::TimedPotion(APotion* TimedPotion)
+{
+}
+
+void APotion::SingleUsePotion(APotion* SingleUsePotion)
+{
 }
 

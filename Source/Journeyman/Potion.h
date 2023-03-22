@@ -80,4 +80,6 @@ public:
 	// Static Mesh for visuals
 
 	void DrinkPotion(APotion* PotionToDrink);
+	void TimedPotion(APotion* TimedPotion);
+	void SingleUsePotion(APotion* SingleUsePotion);
 };
