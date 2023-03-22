@@ -25,3 +25,21 @@ void APotion::Tick(float DeltaTime)
 
 }
 
+void APotion::DrinkPotion(APotion* PotionToDrink)
+{
+	switch (PotionToDrink->PotionStyle)
+	{
+	case EPotionStyle::Null:
+
+		break;
+	case EPotionStyle::SingleUse:
+
+		break;
+	case EPotionStyle::Timed:
+
+		break;
+	default:
+		break;
+	}
+}
+

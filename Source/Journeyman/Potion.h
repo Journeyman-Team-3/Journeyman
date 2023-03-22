@@ -20,6 +20,13 @@ enum class EPotionStyle : uint8 {
 	Timed
 };
 
+UENUM(BlueprintType)
+enum class EAdditiveType : uint8 {
+	Null,
+	Positive,
+	Negative
+};
+
 UCLASS()
 class JOURNEYMAN_API APotion : public AActor
 {
@@ -49,6 +56,13 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Custom Properties")
 	EPotionStyle PotionStyle = EPotionStyle::Null;
 
+	/*
+		Positive - Adds value
+		Negative - Removed value
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
+	EAdditiveType AdditiveType = EAdditiveType::Null;
+
 	// Value to add/remove from statistic
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta = (EditCondition = "PotionStyle == EPotionStyle::SingleUse"))
 		float PotionValue = 5.f;
@@ -64,4 +78,6 @@ public:
 	// Components Needed:
 	// Capsule (for pickup)
 	// Static Mesh for visuals
+
+	void DrinkPotion(APotion* PotionToDrink);
 };
