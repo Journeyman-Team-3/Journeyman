@@ -79,7 +79,9 @@ public:
 	// Capsule (for pickup)
 	// Static Mesh for visuals
 
+	UFUNCTION(BlueprintCallable)
 	void DrinkPotion(APotion* PotionToDrink);
+
 	void TimedPotion(APotion* TimedPotion);
 	void SingleUsePotion(APotion* SingleUsePotion);
 };
