@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Entity.h"
 #include "GameFramework/Actor.h"
 #include "Potion.generated.h"
 
@@ -84,4 +85,9 @@ public:
 
 	void TimedPotion(APotion* TimedPotion);
 	void SingleUsePotion(APotion* SingleUsePotion);
+
+	/*
+		@param Entity - Entity which needs stats modifying
+	*/
+	void UpdateStats(AEntity* Entity, APotion* Potion, float Value);
 };

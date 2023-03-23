@@ -49,5 +49,33 @@ void APotion::TimedPotion(APotion* TimedPotion)
 
 void APotion::SingleUsePotion(APotion* SingleUsePotion)
 {
+	
+}
+
+void APotion::UpdateStats(AEntity* Entity, APotion* Potion, float Value)
+{
+	switch (Potion->PotionType)
+	{
+	/*
+	 * Health
+	*/
+	case EPotionType::Health:
+		if (Potion->AdditiveType == EAdditiveType::Positive)
+		{
+			Entity->Heal(Value);
+		}
+		else if (Potion->AdditiveType == EAdditiveType::Negative)
+		{
+			Entity->TakeDamage(Value);
+		}
+		break;
+	/*
+	 * Manna
+	*/
+
+	/*
+	 * Stamina
+	*/
+	}
 }
 
