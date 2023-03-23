@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		int32 max_mana;
 
-	UPROPERTY(BlueprintReadOnly, Category="Custom Properties")
+	UPROPERTY(BlueprintReadWrite, Category="Custom Properties")
 	float health;
 	UPROPERTY(BlueprintReadWrite, Category="Custom Properties")
 	float stamina;
