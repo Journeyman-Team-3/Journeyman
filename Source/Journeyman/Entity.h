@@ -48,8 +48,8 @@ public:
 	// switches 'isPenetrated' back to false after being switched to true in AttackComponent::SwordLineTrace
 	void ResetEntityBool() { isPenetrated = false; };
 	FTimerHandle TH_ResetEntityBool;
-
 private:
+	
 
 protected:
 	/** Resets HMD orientation in VR. */
