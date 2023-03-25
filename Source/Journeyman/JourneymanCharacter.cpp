@@ -77,6 +77,7 @@ void AJourneymanCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 }
 
 
+
 void AJourneymanCharacter::OnResetVR()
 {
 	// If Journeyman is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in Journeyman.Build.cs is not automatically propagated
