@@ -76,7 +76,7 @@ void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
 {
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap Detected"));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap Detected"));
 	
 	if (OtherActor != GetOwner())
 	{
