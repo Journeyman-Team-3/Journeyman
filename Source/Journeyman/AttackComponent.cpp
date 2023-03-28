@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "RangeProjectile.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -118,11 +119,41 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 >>>>>>> 0.02-AIBranch-Jax
 			float animTime = AnimInstance->Montage_Play(Weapon.GetDefaultObject()->AttackAnimation);
 
+			ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
+			AController* ActorController = OwningCharacter->GetController();
+
+			AAIController* AIOwningController = Cast<AAIController>(ActorController);
+
+			if (ActorController->IsLocalPlayerController())
+			{
+				// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
+
+				// Runs things when it's a PlayerController
+
+				UCharacterMovementComponent* MovementComp = OwningCharacter->GetCharacterMovement();
+
+				MovementComp->MaxWalkSpeed = 150.f;
+			}
+			else if (AIOwningController != nullptr)
+			{
+				// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
+
+				// Runs things when it's a AIController
+			}
+			else
+			{
+				// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
+			}
+
 			FTimerHandle DelayTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
 			{
 <<<<<<< HEAD
+<<<<<<< HEAD
 				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+=======
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
+>>>>>>> Noah-Dev
 
 				// Resets so that the player can attack again
 				
@@ -135,36 +166,14 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 >>>>>>> 0.02-AIBranch-Jax
 				WeaponMesh->SkeletalMesh = nullptr;
 				bAttackOnce = true;
-			}, animTime, false);
+			}, animTime - 0.7f, false);
 		}
 	}
 }
 
 void UAttackComponent::TriggerSword()
-{
-	/*
-	 
-	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
-	AController* ActorController = OwningCharacter->GetController();
-
-	AAIController* AIOwningController = Cast<AAIController>(ActorController);
-
-	if (ActorController->IsLocalPlayerController())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
-		// OwningCharacter->DisableInput(Cast<APlayerController>(ActorController));
-	}
-	else if (AIOwningController != nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
-	}
-	*/
-	
-	GetWorld()->GetTimerManager().SetTimer(SwordSwingTimerHandle, this, &UAttackComponent::SwordLineTrace, 0.0001, true);
+{	
+	GetWorld()->GetTimerManager().SetTimer(TH_SwordSwing, this, &UAttackComponent::SwordLineTrace, 0.0001, true);
 }
 
 void UAttackComponent::SwordLineTrace()
@@ -172,7 +181,7 @@ void UAttackComponent::SwordLineTrace()
 	FVector StartLocation = WeaponMesh->GetSocketLocation(TEXT("start"));
 	FVector EndLocation = WeaponMesh->GetSocketLocation(TEXT("end"));
 
-	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
+	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Magenta, false, 3.f, 0, 15);
 	
 	FHitResult HitResult;
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Camera))
@@ -185,7 +194,7 @@ void UAttackComponent::SwordLineTrace()
 
 			if (EntityHit == nullptr)
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
+				// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: MeleeAttack: HitActorDamage is nullptr"));
 				return;
 			}
 			else
@@ -205,7 +214,7 @@ void UAttackComponent::SwordLineTrace()
 
 void UAttackComponent::StopTriggerSword()
 {
-	GetWorld()->GetTimerManager().ClearTimer(SwordSwingTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TH_SwordSwing);
 
 	ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
 	AController* ActorController = OwningCharacter->GetController();
@@ -214,16 +223,20 @@ void UAttackComponent::StopTriggerSword()
 
 	if (ActorController->IsLocalPlayerController())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player Controller"));
 		OwningCharacter->EnableInput(Cast<APlayerController>(ActorController));
+
+		UCharacterMovementComponent* MovementComp = OwningCharacter->GetCharacterMovement();
+
+		MovementComp->MaxWalkSpeed = 600.f;
 	}
 	else if (AIOwningController != nullptr)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
+	{ 
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AI Controller"));
 	}
 	else
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Fault: TriggerSword: ActorController is neither AI or Player - No Controller Found"));
 	}
 }
 
