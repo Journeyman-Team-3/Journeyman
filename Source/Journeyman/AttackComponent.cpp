@@ -37,13 +37,12 @@ void UAttackComponent::BeginPlay()
 
 		ProjectileSpawnLocation->CreationMethod = EComponentCreationMethod::Instance;
 
-<<<<<<< HEAD
+
 		ProjectileSpawnLocation->SetHiddenInGame(true);
 		ProjectileSpawnLocation->SetVisibility(false);
-=======
+
 		ProjectileSpawnLocation->SetHiddenInGame(false);
 		ProjectileSpawnLocation->SetVisibility(true);
->>>>>>> 0.02-AIBranch-Jax
 	}
 }
 
@@ -93,10 +92,9 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 	if (WeaponMesh)
 	{
-<<<<<<< HEAD
-=======
+
 		// WeaponMesh->SetVisibility(true);
->>>>>>> 0.02-AIBranch-Jax
+
 		WeaponMesh->SetupAttachment(OwningActorMeshComp, TEXT("sword"));
 		WeaponMesh->SkeletalMesh = Weapon.GetDefaultObject()->weaponMesh;
 		WeaponMesh->RegisterComponent();
@@ -112,11 +110,11 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 
 		if (AnimInstance != nullptr)
 		{
-<<<<<<< HEAD
+
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
-=======
+
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AnimInstance"));
->>>>>>> 0.02-AIBranch-Jax
+
 			float animTime = AnimInstance->Montage_Play(Weapon.GetDefaultObject()->AttackAnimation);
 
 			ACharacter* OwningCharacter = Cast<ACharacter>(OwningActor);
@@ -148,22 +146,16 @@ void UAttackComponent::SwingAttack(TSubclassOf<AWeapon> Weapon)
 			FTimerHandle DelayTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [&]()
 			{
-<<<<<<< HEAD
-<<<<<<< HEAD
 				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
-=======
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
->>>>>>> Noah-Dev
 
 				// Resets so that the player can attack again
 				
 				// TODO: Remove Mesh from hand?
 
-=======
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ResetDoOnce"));
 				// Resets so that the player can attack again
 				// WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
->>>>>>> 0.02-AIBranch-Jax
 				WeaponMesh->SkeletalMesh = nullptr;
 				bAttackOnce = true;
 			}, animTime - 0.7f, false);
