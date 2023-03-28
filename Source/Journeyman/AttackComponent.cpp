@@ -36,8 +36,8 @@ void UAttackComponent::BeginPlay()
 
 		ProjectileSpawnLocation->CreationMethod = EComponentCreationMethod::Instance;
 
-		ProjectileSpawnLocation->SetHiddenInGame(false);
-		ProjectileSpawnLocation->SetVisibility(true);
+		ProjectileSpawnLocation->SetHiddenInGame(true);
+		ProjectileSpawnLocation->SetVisibility(false);
 	}
 }
 
