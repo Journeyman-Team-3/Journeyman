@@ -26,21 +26,30 @@ public:
 
 	// si senior
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
-		int32 max_health = 100;
+		int32 max_health;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
-		int32 max_stamina = 100;
+		int32 max_stamina;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
-		int32 max_mana = 100;
+		int32 max_mana;
 
-	UPROPERTY(BlueprintReadOnly, Category="Custom Properties")
-	int32 health;
 	UPROPERTY(BlueprintReadWrite, Category="Custom Properties")
-	int32 stamina;
+	float health;
+	UPROPERTY(BlueprintReadWrite, Category="Custom Properties")
+	float stamina;
 	UPROPERTY(BlueprintReadWrite, Category = "Custom Properties")
-	int32 mana;
+	float mana;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-	int32 speed = 1;
+	float speed = 1.0f;
+
+	// Stores hit state / used to stop being hit multiple times per attack
+	bool isPenetrated = false;
+
+	// switches 'isPenetrated' back to false after being switched to true in AttackComponent::SwordLineTrace
+	void ResetEntityBool() { isPenetrated = false; };
+	FTimerHandle TH_ResetEntityBool;
+private:
+	
 
 protected:
 	/** Resets HMD orientation in VR. */
@@ -70,13 +79,19 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
 public:	
-
+	UFUNCTION(BlueprintCallable, Category = "Custom Functions", meta = (ToolTip = "Needed to start"))
+		void Constructor()
+	{
+		// Set health, stam and mana
+		health = max_health;
+		stamina = max_stamina;
+		mana = max_mana;
+	};
 	// si seniorita
 	UFUNCTION(BlueprintCallable, Category = "Custom Functions", meta = (ToolTip = "Damages entity by x, returns false if Entity health is now below 0"))
 		bool TakeDamage(int32 _dmg)
