@@ -16,7 +16,7 @@ void USwordEvent::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 
 	if (Temp != nullptr)
 	{
-		Temp->TriggerSword();
+		// Temp->TriggerSword();
 	}
 }
 
@@ -30,6 +30,6 @@ void USwordEvent::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 
 	if (Temp != nullptr)
 	{
-		Temp->StopTriggerSword();
+		// Temp->StopTriggerSword();
 	}
 }

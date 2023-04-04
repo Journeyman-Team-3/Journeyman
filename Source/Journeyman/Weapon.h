@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Range"))
 		FVector SpawnOffset;
 
-	UPROPERTY(EditAnywhere, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Melee"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Melee"))
 		UAnimMontage* AttackAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
@@ -62,7 +62,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Custom Functions")
 		void DealDamage(AEntity* _enty, int32 _dmg) { _enty->TakeDamage(_dmg); }
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void OnHitActor(AEntity* EntityHit);
 	
 };

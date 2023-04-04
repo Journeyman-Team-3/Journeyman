@@ -43,10 +43,13 @@ public:
 	int32 speed = 1;
 
 	// Stores hit state / used to stop being hit multiple times per attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 	bool isPenetrated = false;
 
 	// switches 'isPenetrated' back to false after being switched to true in AttackComponent::SwordLineTrace
 	void ResetEntityBool() { isPenetrated = false; };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 	FTimerHandle TH_ResetEntityBool;
 private:
 	
