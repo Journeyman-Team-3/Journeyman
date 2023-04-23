@@ -85,7 +85,7 @@ void ARangeProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 		{
 			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap Detected - Not Self"));
 			
-			AEntity* HitActor = Cast<AEntity>(OtherActor);
+			AActor* HitActor = Cast<AActor>(OtherActor);
 
 			if (HitActor == nullptr)
 			{
