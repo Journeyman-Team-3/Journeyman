@@ -40,13 +40,16 @@ public:
 	float mana;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Properties")
-	float speed = 1.0f;
+	int32 speed = 1;
 
 	// Stores hit state / used to stop being hit multiple times per attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 	bool isPenetrated = false;
 
 	// switches 'isPenetrated' back to false after being switched to true in AttackComponent::SwordLineTrace
 	void ResetEntityBool() { isPenetrated = false; };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 	FTimerHandle TH_ResetEntityBool;
 private:
 	
@@ -56,10 +59,10 @@ protected:
 	void OnResetVR();
 
 	/** Called for forwards/backward input */
-	//void MoveForward(float Value);
+	void MoveForward(float Value);
 
 	/** Called for side to side input */
-	//void MoveRight(float Value);
+	void MoveRight(float Value);
 
 	/**
 	 * Called via input to turn at a given rate.
@@ -121,6 +124,20 @@ public:
 				health += _heal;
 		}
 	}
+	
+	UFUNCTION(BlueprintCallable, Category="Custom Functions", meta=(ToolTip = "Heals entity mana by x, never goes above entity max_mana"))
+    		void ManaHeal(int32 _mana) 
+    	{ 
+    		if (mana < max_mana)
+    		{
+    			if (mana + _mana > max_mana)
+    			{
+    				mana = max_mana;
+    			}
+    			else
+    				mana += _mana;
+    		}
+    	}
 
 
 };
