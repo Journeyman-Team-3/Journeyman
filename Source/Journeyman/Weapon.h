@@ -30,7 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Range"))
 		FVector SpawnOffset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Custom Properties", meta=(EditConditionHides="weaponType == EAttackType::Null"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta = (EditCondition = "weaponType == EAttackType::Range"))
+		bool NoAnimRequired = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Custom Properties", meta=(EditCondition="(weaponType == EAttackType::Range && NoAnimRequired == false) || weaponType == EAttackType::Melee"))
 		UAnimMontage* AttackAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
