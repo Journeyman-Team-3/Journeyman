@@ -6,6 +6,7 @@
 #include "EAttackType.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UObject/UObject.h"
 #include "Weapon.generated.h"
 
 
@@ -18,22 +19,26 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 
+#if WITH_EDITOR
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+#endif
+
 	// Custom properties
 	// Attack Type for the weapon, used to determine what to do when Attack is called.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		EAttackType weaponType = EAttackType::Null;
 
 	// Mesh held in the OwningActors hand
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditConditionHides="weaponType == EAttackType::Null"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		USkeletalMesh* weaponMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta=(EditCondition="weaponType == EAttackType::Range"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		FVector SpawnOffset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties", meta = (EditCondition = "weaponType == EAttackType::Range"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")
 		bool NoAnimRequired = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Custom Properties", meta=(EditCondition="(weaponType == EAttackType::Range && NoAnimRequired == false) || weaponType == EAttackType::Melee"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Custom Properties")
 		UAnimMontage* AttackAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Properties")

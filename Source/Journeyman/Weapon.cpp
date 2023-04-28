@@ -11,6 +11,35 @@ AWeapon::AWeapon()
 
 }
 
+bool AWeapon::CanEditChange(const FProperty* InProperty) const
+{
+	const bool ParentValue = Super::CanEditChange(InProperty);
+
+	const FName PropertyName = InProperty->GetFName();
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AWeapon, weaponMesh))
+	{
+		return ParentValue && weaponType != EAttackType::Null;
+	}
+	
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AWeapon, SpawnOffset))
+	{
+		return ParentValue && weaponType == EAttackType::Range;
+	}
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AWeapon, NoAnimRequired))
+	{
+		return ParentValue && weaponType == EAttackType::Range;
+	}
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AWeapon, AttackAnimation))
+	{
+		return ParentValue && (weaponType == EAttackType::Range && NoAnimRequired == false) || (weaponType == EAttackType::Melee);
+	}
+
+	return ParentValue;
+}
+
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
