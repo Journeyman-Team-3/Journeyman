@@ -71,6 +71,6 @@ public:
 		void DealDamage(AEntity* _enty, int32 _dmg) { _enty->TakeDamage(_dmg); }
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-		void OnHitActor(AEntity* EntityHit);
+		void OnHitActor(AActor* ActorHit);
 	
 };
